@@ -19,13 +19,14 @@ const useStyles = makeStyles(theme => ({
   title: {
     flexGrow: 1
   },
-  headerCss: {
+  headerStyle: {
+    height: "7vh",
     backgroundColor: "#1a1a32"
   },
-  logoCss: {
+  logoStyle: {
     height: "50px"
   },
-  profileImageCss: {
+  profileImageStyle: {
     height: "35px",
     borderRadius: "50%"
   }
@@ -51,9 +52,9 @@ export default function Header() {
 
   return (
     <div>
-      <AppBar className={classes.headerCss} position="static">
+      <AppBar className={classes.headerStyle} position="static">
         <Toolbar>
-          <img className={classes.logoCss} src={Logo} alt="Senti Flow" />
+          <img className={classes.logoStyle} src={Logo} alt="Senti Flow" />
           <Typography variant="h6" className={classes.title}>
             Aalborg Karneval Parade
           </Typography>
@@ -67,7 +68,7 @@ export default function Header() {
                 color="inherit"
               >
                 <img
-                  className={classes.profileImageCss}
+                  className={classes.profileImageStyle}
                   src={ProfileImage}
                   alt="User image"
                 />
