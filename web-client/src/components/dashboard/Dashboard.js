@@ -1,20 +1,24 @@
 import React from "react";
 import Grid from "@material-ui/core/Grid";
+import { makeStyles } from "@material-ui/core/styles";
+import MapView from "./MapView";
+import Filter from "./Filter";
+import Status from "./Status";
+
+const useStyles = makeStyles(theme => ({
+  container: {
+    height: "93vh"
+  }
+}));
 
 export default function Dashboard() {
+  const classes = useStyles();
+
   return (
-    <Grid container xl={12}>
-      <Grid Item style={{ background: "#CCC" }} xl={7}>
-        Map
-        <br />
-        asdasd
-      </Grid>
-      <Grid Item style={{ background: "red" }} xl={2}>
-        Filter
-      </Grid>
-      <Grid Item style={{ background: "green" }} xl={3}>
-        Status
-      </Grid>
+    <Grid className={classes.container} container>
+      <MapView />
+      <Filter />
+      <Status />
     </Grid>
   );
 }

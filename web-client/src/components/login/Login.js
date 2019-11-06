@@ -40,7 +40,7 @@ const useStyles = makeStyles(theme => ({
       border: "1px solid red"
     }
   },
-  logoCss: {
+  logoStyle: {
     height: "70px"
   },
   card: {
@@ -54,7 +54,7 @@ export default function Login() {
   return (
     <Grid className={classes.gridFlex} xs={12}>
       <Card className={(classes.card, classes.gridFlex)}>
-        <img className={classes.logoCss} src={Logo} alt="Senti Flow" />
+        <img className={classes.logoStyle} src={Logo} alt="Senti Flow" />
 
         <TextField
           id="outlined-email-input"
