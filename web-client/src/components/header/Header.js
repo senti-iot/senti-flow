@@ -70,7 +70,7 @@ export default function Header() {
                 <img
                   className={classes.profileImageStyle}
                   src={ProfileImage}
-                  alt="User image"
+                  alt="Profile"
                 />
               </IconButton>
               <Menu

@@ -3,7 +3,7 @@ import Grid from "@material-ui/core/Grid";
 import { makeStyles } from "@material-ui/core/styles";
 import MapView from "./MapView";
 import Filter from "./Filter";
-import Status from "./Status";
+import StatusContainer from "./StatusContainer";
 
 const useStyles = makeStyles(theme => ({
   container: {
@@ -18,7 +18,7 @@ export default function Dashboard() {
     <Grid className={classes.container} container>
       <MapView />
       <Filter />
-      <Status />
+      <StatusContainer />
     </Grid>
   );
 }

@@ -1,8 +1,7 @@
-import React from "react";
 import Grid from "@material-ui/core/Grid";
-import Leaflet from "leaflet";
 import { makeStyles } from "@material-ui/core/styles";
-import { Map, TileLayer, Marker, Popup, Circle } from "react-leaflet";
+import React from "react";
+import { Map, TileLayer } from "react-leaflet";
 import MessageBox from "./MessageBox";
 
 const useStyles = makeStyles(theme => ({
