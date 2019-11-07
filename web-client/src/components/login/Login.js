@@ -35,9 +35,6 @@ const useStyles = makeStyles(theme => ({
     fontWeight: "600",
     "&:hover": {
       background: "#e38d10"
-    },
-    "&:focus": {
-      border: "1px solid red"
     }
   },
   logoStyle: {
@@ -117,7 +114,6 @@ export default function Login() {
           variant={"contained"}
           fullWidth
           color={"secondary"}
-          color="primary"
           className={(classes.button, classes.loginButton)}
         >
           Login

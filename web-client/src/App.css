@@ -37,7 +37,7 @@ Scrollbar style
 
 ::-webkit-scrollbar-thumb {
   border-radius: 10px;
-  background: linear-gradient(left, #fff, #e4e4e4);
+  background: linear-gradient("to left", #fff, #e4e4e4);
   border: 1px solid #aaa;
 }
 
@@ -46,5 +46,5 @@ Scrollbar style
 }
 
 ::-webkit-scrollbar-thumb:active {
-  background: linear-gradient(left, #22add4, #1e98ba);
+  background: linear-gradient("to left", #22add4, #1e98ba);
 }
