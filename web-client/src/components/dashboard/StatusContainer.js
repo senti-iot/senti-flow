@@ -1,4 +1,5 @@
 import React from "react";
+import Status from "./Status";
 import Grid from "@material-ui/core/Grid";
 import { makeStyles } from "@material-ui/core/styles";
 import AppBar from "@material-ui/core/AppBar";
@@ -22,7 +23,7 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-export default function Status() {
+export default function StatusContainer() {
   const classes = useStyles();
 
   return (
@@ -32,7 +33,9 @@ export default function Status() {
           Status
         </Typography>
       </AppBar>
-      <div className={classes.statusContentStyle}></div>
+      <div className={classes.statusContentStyle}>
+        <Status />
+      </div>
     </Grid>
   );
 }
