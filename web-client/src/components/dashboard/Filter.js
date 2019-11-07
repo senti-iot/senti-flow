@@ -3,6 +3,8 @@ import Grid from "@material-ui/core/Grid";
 import { makeStyles } from "@material-ui/core/styles";
 import AppBar from "@material-ui/core/AppBar";
 import Typography from "@material-ui/core/Typography";
+import FormControlLabel from "@material-ui/core/FormControlLabel";
+import Checkbox from "@material-ui/core/Checkbox";
 
 const useStyles = makeStyles(theme => ({
   headerStyle: {
@@ -19,6 +21,10 @@ const useStyles = makeStyles(theme => ({
     zIndex: "1"
   },
   filterContentStyle: {
+    display: "flex",
+    flexDirection: "column",
+    paddingLeft: "30px",
+    textAlign: "left",
     overflowY: "auto",
     height: "84vh"
   }
@@ -34,7 +40,42 @@ export default function Filter() {
           Filter
         </Typography>
       </AppBar>
-      <div className={classes.filterContentStyle}></div>
+
+      <div className={classes.filterContentStyle}>
+        <FormControlLabel
+          control={
+            <Checkbox
+              value="checkedB"
+              color="primary"
+              labelStyle={{ color: "#16125f" }}
+              iconStyle={{ fill: "#16125f" }}
+              inputStyle={{ color: "#16125f" }}
+              style={{ color: "#16125f" }}
+              inputProps={{
+                "aria-label": "secondary checkbox"
+              }}
+            />
+          }
+          label="Alle"
+        />
+
+        <FormControlLabel
+          control={
+            <Checkbox
+              value="checkedB"
+              color="primary"
+              labelStyle={{ color: "#16125f" }}
+              iconStyle={{ fill: "#16125f" }}
+              inputStyle={{ color: "#16125f" }}
+              style={{ color: "#16125f" }}
+              inputProps={{
+                "aria-label": "secondary checkbox"
+              }}
+            />
+          }
+          label="Vogn 12"
+        />
+      </div>
     </Grid>
   );
 }
