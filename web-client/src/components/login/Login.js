@@ -12,6 +12,8 @@ import IconButton from "@material-ui/core/IconButton";
 import AccountIcon from "@material-ui/icons/Person";
 import PasswordIcon from "@material-ui/icons/Visibility";
 import OrgIcon from "@material-ui/icons/Domain";
+import { useHistory, useLocation } from "react-router";
+import { __esModule } from "react-cookies";
 
 const useStyles = makeStyles(theme => ({
   gridFlex: {
@@ -47,9 +49,14 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
+export let location;
+export let history;
+
 function Login(props) {
   const classes = useStyles();
   const [state, setState] = useState({ email: "", password: "", orgId: "" });
+  history = useHistory();
+  location = useLocation();
 
   function handleChange(e) {
     setState({ ...state, [e.target.name]: e.target.value });
@@ -63,7 +70,6 @@ function Login(props) {
       password: state.password,
       orgNickname: state.orgId
     };
-    console.log(userData);
     props.loginUser(userData);
   }
 
@@ -154,7 +160,4 @@ const mapStateToProps = state => ({
   auth: state.auth
 });
 
-export default connect(
-  mapStateToProps,
-  { loginUser }
-)(Login);
+export default connect(mapStateToProps, { loginUser })(Login);
