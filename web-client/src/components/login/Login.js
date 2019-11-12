@@ -2,9 +2,10 @@ import Button from "@material-ui/core/Button";
 import Grid from "@material-ui/core/Grid";
 import { makeStyles } from "@material-ui/core/styles";
 import TextField from "@material-ui/core/TextField";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import cookie from "react-cookies";
 import { connect } from "react-redux";
-import { loginUser } from "../../redux/action/authActions";
+import { loginUser, setToken } from "../../redux/action/authActions";
 import Logo from "../../assets/images/senti.flow.png";
 import InputAdornment from "@material-ui/core/InputAdornment";
 import Card from "@material-ui/core/Card";
@@ -72,6 +73,17 @@ function Login(props) {
     };
     props.loginUser(userData);
   }
+
+  useEffect(() => {
+    var loginData = cookie.load("SESSION");
+    if (loginData) {
+      if (setToken()) {
+        history.push("/dashboard");
+      } else {
+        history.push("/dashboard");
+      }
+    }
+  }, [location, history]);
 
   return (
     <Grid item className={classes.gridFlex} xs={12}>
@@ -160,4 +172,7 @@ const mapStateToProps = state => ({
   auth: state.auth
 });
 
-export default connect(mapStateToProps, { loginUser })(Login);
+export default connect(
+  mapStateToProps,
+  { loginUser }
+)(Login);

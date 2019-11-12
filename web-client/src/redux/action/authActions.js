@@ -4,7 +4,6 @@ import moment from "moment";
 import { location, history } from "../../components/login/Login";
 import { create } from "apisauce";
 import { SET_CURRENT_USER } from "./actionTypes";
-
 // const location = useLocation();
 // const history = useHistory();
 
@@ -43,7 +42,16 @@ const imageApi = create({
   }
 });
 
-const setToken = () => {
+export const loginApi = create({
+  baseURL: backendHost,
+  timout: 30000,
+  headers: {
+    Accept: "application/json",
+    "Content-Type": "application/json"
+  }
+});
+
+export const setToken = () => {
   try {
     var OAToken = cookie.load("SESSION").sessionID;
     api.setHeader("ODEUMAuthToken", OAToken);
@@ -70,10 +78,25 @@ export const loginUser = userData => dispatch => {
         if (res.data.isLoggedIn) {
           console.log("hello");
           if (setToken()) {
+            dispatch(setCurrentUser(res.data));
             var prevURL = location.state ? location.state.prevURL : null;
             history.push("/dashborad");
           }
         }
       }
     });
+};
+
+export const setCurrentUser = user => {
+  return {
+    type: SET_CURRENT_USER,
+    payload: user
+  };
+};
+
+export const logOut = () => async dispatch => {
+  var session = cookie.load("SESSION");
+  var data = await loginApi.delete(`odeum/auth/${session.sessionID}`);
+  cookie.remove("SESSION");
+  dispatch(setCurrentUser({}));
 };

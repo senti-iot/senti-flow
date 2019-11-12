@@ -8,6 +8,8 @@ import Typography from "@material-ui/core/Typography";
 import React from "react";
 import ProfileImage from "../../assets/images/profile.png";
 import Logo from "../../assets/images/senti.flow.negativ.png";
+import { connect } from "react-redux";
+import { logOut } from "../../redux/action/authActions";
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -32,15 +34,11 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-export default function Header() {
+function Header(props) {
   const classes = useStyles();
   const [auth, setAuth] = React.useState(true);
   const [anchorEl, setAnchorEl] = React.useState(null);
   const open = Boolean(anchorEl);
-
-  const handleChange = event => {
-    setAuth(event.target.checked);
-  };
 
   const handleMenu = event => {
     setAnchorEl(event.currentTarget);
@@ -48,6 +46,10 @@ export default function Header() {
 
   const handleClose = () => {
     setAnchorEl(null);
+  };
+
+  const handleLogout = () => {
+    props.logOut();
   };
 
   return (
@@ -88,8 +90,7 @@ export default function Header() {
                 open={open}
                 onClose={handleClose}
               >
-                <MenuItem onClick={handleClose}>Profile</MenuItem>
-                <MenuItem onClick={handleClose}>My account</MenuItem>
+                <MenuItem onClick={handleLogout}>Logout</MenuItem>
               </Menu>
             </div>
           )}
@@ -98,3 +99,12 @@ export default function Header() {
     </div>
   );
 }
+
+const mapStateToProps = state => ({
+  auth: state.auth
+});
+
+export default connect(
+  mapStateToProps,
+  { logOut }
+)(Header);
