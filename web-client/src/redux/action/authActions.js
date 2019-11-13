@@ -1,11 +1,8 @@
 import axios from "axios";
 import cookie from "react-cookies";
 import moment from "moment";
-import { location, history } from "../../components/login/Login";
 import { create } from "apisauce";
 import { SET_CURRENT_USER } from "./actionTypes";
-// const location = useLocation();
-// const history = useHistory();
 
 let backendHost, sentiAPI;
 
@@ -70,8 +67,6 @@ export const loginUser = userData => dispatch => {
       userData
     )
     .then(res => {
-      // const {userData} = res.data
-      console.log(res);
       if (res.data) {
         let exp = moment().add("1", "day");
         cookie.save("SESSION", res, { path: "/", expires: exp.toDate() });
@@ -79,8 +74,6 @@ export const loginUser = userData => dispatch => {
           console.log("hello");
           if (setToken()) {
             dispatch(setCurrentUser(res.data));
-            var prevURL = location.state ? location.state.prevURL : null;
-            history.push("/dashborad");
           }
         }
       }

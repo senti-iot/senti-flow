@@ -8,8 +8,14 @@ function App() {
   return (
     <BrowserRouter>
       <div className="App">
-        <Route path="/login" component={Login} />
-        <Route path="/dashborad" component={Dashboard} />
+        <Switch>
+          <Route path="/login">
+            <Login />
+          </Route>
+          <Route path="/dashborad">
+            <Dashboard />
+          </Route>
+        </Switch>
       </div>
     </BrowserRouter>
   );
