@@ -72,7 +72,6 @@ export const loginUser = userData => dispatch => {
         let exp = moment().add("1", "day");
         cookie.save("SESSION", res, { path: "/", expires: exp.toDate() });
         if (res.data.isLoggedIn) {
-          console.log("hello");
           if (setToken()) {
             dispatch(setCurrentUser(res.data));
             history.push("/dashboard");

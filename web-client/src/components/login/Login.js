@@ -11,7 +11,8 @@ import InputAdornment from "@material-ui/core/InputAdornment";
 import Card from "@material-ui/core/Card";
 import IconButton from "@material-ui/core/IconButton";
 import AccountIcon from "@material-ui/icons/Person";
-import PasswordIcon from "@material-ui/icons/Visibility";
+import Visibility from "@material-ui/icons/Visibility";
+import VisibilityOff from "@material-ui/icons/VisibilityOff";
 import OrgIcon from "@material-ui/icons/Domain";
 import { useHistory, useLocation } from "react-router";
 import { __esModule } from "react-cookies";
@@ -55,7 +56,12 @@ export let history;
 
 function Login(props) {
   const classes = useStyles();
-  const [state, setState] = useState({ email: "", password: "", orgId: "" });
+  const [state, setState] = useState({
+    email: "",
+    password: "",
+    orgId: "",
+    showPassword: false
+  });
   history = useHistory();
   location = useLocation();
 
@@ -72,6 +78,10 @@ function Login(props) {
       orgNickname: state.orgId
     };
     props.loginUser(userData);
+  }
+
+  function handleShowPassword() {
+    setState({ ...state, showPassword: !state.showPassword });
   }
 
   useEffect(() => {
@@ -115,15 +125,15 @@ function Login(props) {
             name="password"
             label="Password"
             className={classes.textField}
-            type="password"
+            type={state.showPassword ? "text" : "password"}
             autoComplete="current-password"
             margin="normal"
             variant="outlined"
             InputProps={{
               endAdornment: (
                 <InputAdornment>
-                  <IconButton>
-                    <PasswordIcon />
+                  <IconButton onClick={handleShowPassword}>
+                    {state.showPassword ? <Visibility /> : <VisibilityOff />}
                   </IconButton>
                 </InputAdornment>
               )
