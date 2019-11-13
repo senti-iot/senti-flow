@@ -8,6 +8,7 @@ import StatusContainer from "./StatusContainer";
 import Header from "../header/Header";
 import { setToken } from "../../redux/action/authActions";
 import cookie from "react-cookies";
+import { connect } from "react-redux";
 
 const useStyles = makeStyles(theme => ({
   container: {
@@ -15,7 +16,7 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-export default function Dashboard() {
+function Dashboard() {
   const classes = useStyles();
   const history = useHistory();
   const location = useLocation();
@@ -38,3 +39,9 @@ export default function Dashboard() {
     </>
   );
 }
+
+const mapStateToProps = state => ({
+  auth: state.auth
+});
+
+export default connect(mapStateToProps, {})(Dashboard);
