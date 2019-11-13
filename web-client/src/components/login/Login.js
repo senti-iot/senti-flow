@@ -2,7 +2,7 @@ import Button from "@material-ui/core/Button";
 import Grid from "@material-ui/core/Grid";
 import { makeStyles } from "@material-ui/core/styles";
 import TextField from "@material-ui/core/TextField";
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import cookie from "react-cookies";
 import { connect } from "react-redux";
 import { loginUser, setToken } from "../../redux/action/authActions";
@@ -13,7 +13,7 @@ import IconButton from "@material-ui/core/IconButton";
 import AccountIcon from "@material-ui/icons/Person";
 import PasswordIcon from "@material-ui/icons/Visibility";
 import OrgIcon from "@material-ui/icons/Domain";
-import { useHistory, useLocation, withRouter, Redirect } from "react-router";
+import { useHistory, useLocation } from "react-router";
 import { __esModule } from "react-cookies";
 
 const useStyles = makeStyles(theme => ({
@@ -50,13 +50,14 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
+export let location;
+export let history;
+
 function Login(props) {
   const classes = useStyles();
   const [state, setState] = useState({ email: "", password: "", orgId: "" });
-
-  if (props.auth.isAuthenticated) {
-    return <Redirect to="/dashboard" />;
-  }
+  history = useHistory();
+  location = useLocation();
 
   function handleChange(e) {
     setState({ ...state, [e.target.name]: e.target.value });
@@ -72,6 +73,15 @@ function Login(props) {
     };
     props.loginUser(userData);
   }
+
+  useEffect(() => {
+    var loginData = cookie.load("SESSION");
+    if (loginData) {
+      if (setToken()) {
+        history.push("/dashboard");
+      }
+    }
+  }, [location, history]);
 
   return (
     <Grid item className={classes.gridFlex} xs={12}>
