@@ -1,6 +1,7 @@
 import axios from "axios";
 import cookie from "react-cookies";
 import moment from "moment";
+import { location, history } from "../../components/login/Login";
 import { create } from "apisauce";
 import { SET_CURRENT_USER } from "./actionTypes";
 
@@ -74,6 +75,7 @@ export const loginUser = userData => dispatch => {
           console.log("hello");
           if (setToken()) {
             dispatch(setCurrentUser(res.data));
+            history.push("/dashboard");
           }
         }
       }
@@ -92,4 +94,5 @@ export const logOut = () => async dispatch => {
   var data = await loginApi.delete(`odeum/auth/${session.sessionID}`);
   cookie.remove("SESSION");
   dispatch(setCurrentUser({}));
+  history.push("/login");
 };
