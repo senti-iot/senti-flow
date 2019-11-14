@@ -6,6 +6,7 @@ import { makeStyles } from "@material-ui/core/styles";
 import Toolbar from "@material-ui/core/Toolbar";
 import Typography from "@material-ui/core/Typography";
 import React from "react";
+import { useHistory, useLocation } from "react-router";
 import ProfileImage from "../../assets/images/profile.png";
 import PowerSettingsNewIcon from "@material-ui/icons/PowerSettingsNew";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
@@ -38,9 +39,18 @@ const useStyles = makeStyles(theme => ({
   userInfoMenu: {
     minWidth: "200px"
   },
-  mutedText: {
-    color: "#777",
-    fontWeight: "bold"
+  nameAndEmail: {
+    // height: 46,
+    display: "flex",
+    flexFlow: "column",
+    alignItems: "flex-start",
+    "&:hover": {
+      background: "inherit"
+    },
+    "&:focus": {
+      background: "inherit"
+    },
+    cursor: "default"
   }
 }));
 
@@ -48,6 +58,9 @@ function Header(props) {
   const classes = useStyles();
   const [anchorEl, setAnchorEl] = React.useState(null);
   const open = Boolean(anchorEl);
+
+  const history = useHistory();
+  const location = useLocation();
 
   const handleMenu = event => {
     setAnchorEl(event.currentTarget);
@@ -59,6 +72,7 @@ function Header(props) {
 
   const handleLogout = () => {
     props.logOut();
+    history.push("/login");
   };
 
   const user = props.auth.profile;
@@ -98,14 +112,18 @@ function Header(props) {
               open={open}
               onClose={handleClose}
             >
-              <MenuItem>
-                <Typography
-                  className={classes.mutedText}
-                >{`${user.firstName} ${user.lastName}`}</Typography>
+              <MenuItem
+                disableRipple
+                component={"div"}
+                className={classes.nameAndEmail}
+              >
+                <Typography>{`${user.firstName} ${user.lastName}`}</Typography>
               </MenuItem>
 
               <MenuItem onClick={handleLogout}>
-                <PowerSettingsNewIcon></PowerSettingsNewIcon>
+                <PowerSettingsNewIcon
+                  style={{ marginRight: "10px" }}
+                ></PowerSettingsNewIcon>
                 <Typography>Logout</Typography>
               </MenuItem>
             </Menu>
