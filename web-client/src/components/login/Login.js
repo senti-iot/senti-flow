@@ -5,7 +5,11 @@ import TextField from "@material-ui/core/TextField";
 import React, { useState, useEffect } from "react";
 import cookie from "react-cookies";
 import { connect } from "react-redux";
-import { loginUser, setToken } from "../../redux/action/authActions";
+import {
+  loginUser,
+  setToken,
+  setCurrentProfile
+} from "../../redux/action/authActions";
 import Logo from "../../assets/images/senti.flow.png";
 import InputAdornment from "@material-ui/core/InputAdornment";
 import Card from "@material-ui/core/Card";
@@ -14,7 +18,7 @@ import AccountIcon from "@material-ui/icons/Person";
 import Visibility from "@material-ui/icons/Visibility";
 import VisibilityOff from "@material-ui/icons/VisibilityOff";
 import OrgIcon from "@material-ui/icons/Domain";
-import { useHistory, useLocation } from "react-router";
+import { useHistory, useLocation, Redirect } from "react-router";
 import { __esModule } from "react-cookies";
 
 const useStyles = makeStyles(theme => ({
@@ -51,9 +55,6 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-export let location;
-export let history;
-
 function Login(props) {
   const classes = useStyles();
   const [state, setState] = useState({
@@ -62,8 +63,8 @@ function Login(props) {
     orgId: "",
     showPassword: false
   });
-  history = useHistory();
-  location = useLocation();
+  const history = useHistory();
+  const location = useLocation();
 
   function handleChange(e) {
     setState({ ...state, [e.target.name]: e.target.value });
@@ -71,27 +72,35 @@ function Login(props) {
 
   function handleSubmit(e) {
     e.preventDefault();
-
     const userData = {
       username: state.email,
       password: state.password,
       orgNickname: state.orgId
     };
     props.loginUser(userData);
+    // console.log(props.isAuthenticated);
+  }
+
+  if (props.isAuthenticated) {
+    return <Redirect to="/dashboard" />;
   }
 
   function handleShowPassword() {
     setState({ ...state, showPassword: !state.showPassword });
   }
 
-  useEffect(() => {
-    var loginData = cookie.load("SESSION");
-    if (loginData) {
-      if (setToken()) {
-        history.push("/dashboard");
-      }
-    }
-  }, [location, history]);
+  // if (props.state.auth.isAuthenticated) {
+  //   history.push("/dashboard");
+  // }
+
+  // useEffect(() => {
+  //   var loginData = cookie.load("SESSION");
+  //   if (loginData) {
+  //     if (setToken()) {
+  //       history.push("/dashboard");
+  //     }
+  //   }
+  // }, [location, history]);
 
   return (
     <Grid item className={classes.gridFlex} xs={12}>
@@ -177,7 +186,11 @@ function Login(props) {
 }
 
 const mapStateToProps = state => ({
-  auth: state.auth
+  isAuthenticated: state.auth.isAuthenticated,
+  auth: state.auth,
+  profile: state.auth.profile
 });
 
-export default connect(mapStateToProps, { loginUser })(Login);
+export default connect(mapStateToProps, { loginUser, setCurrentProfile })(
+  Login
+);

@@ -1,7 +1,6 @@
 import axios from "axios";
 import cookie from "react-cookies";
 import moment from "moment";
-import { location, history } from "../../components/login/Login";
 import { create } from "apisauce";
 import { SET_CURRENT_USER, SET_CURRENT_PROFILE } from "./actionTypes";
 
@@ -93,7 +92,6 @@ export const loginUser = userData => dispatch => {
               )
               .then(res => {
                 dispatch(setCurrentProfile(res.data));
-                history.push("/dashboard");
               });
           }
         }
@@ -121,5 +119,4 @@ export const logOut = () => async dispatch => {
   cookie.remove("SESSION");
   dispatch(setCurrentUser({}));
   dispatch(setCurrentProfile({}));
-  history.push("/login");
 };

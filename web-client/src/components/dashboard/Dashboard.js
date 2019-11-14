@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { useHistory, useLocation } from "react-router";
+import { useHistory, useLocation, Redirect } from "react-router";
 import Grid from "@material-ui/core/Grid";
 import { makeStyles } from "@material-ui/core/styles";
 import MapView from "./MapView";
@@ -16,17 +16,21 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-function Dashboard() {
+function Dashboard(props) {
   const classes = useStyles();
   const history = useHistory();
   const location = useLocation();
 
   useEffect(() => {
-    var loginData = cookie.load("SESSION");
-    if (!loginData) {
-      history.push("/login");
-    }
-  }, [location, history]);
+    console.log("Rendered!");
+    // if (!props.isAuthenticated) {
+    //   return <Redirect to="/login" />;
+    // }
+  });
+
+  // if (!props.isAuthenticated) {
+  //   return <Redirect to="/login" />;
+  // }
 
   return (
     <>
@@ -41,7 +45,9 @@ function Dashboard() {
 }
 
 const mapStateToProps = state => ({
-  auth: state.auth
+  isAuthenticated: state.auth.isAuthenticated,
+  auth: state.auth,
+  profile: state.auth.profile
 });
 
 export default connect(mapStateToProps, {})(Dashboard);
