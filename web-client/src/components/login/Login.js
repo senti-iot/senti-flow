@@ -57,14 +57,13 @@ const useStyles = makeStyles(theme => ({
 
 function Login(props) {
   const classes = useStyles();
+
   const [state, setState] = useState({
     email: "",
     password: "",
     orgId: "",
     showPassword: false
   });
-  const history = useHistory();
-  const location = useLocation();
 
   function handleChange(e) {
     setState({ ...state, [e.target.name]: e.target.value });
@@ -81,12 +80,12 @@ function Login(props) {
     // console.log(props.isAuthenticated);
   }
 
-  if (props.isAuthenticated) {
-    return <Redirect to="/dashboard" />;
-  }
-
   function handleShowPassword() {
     setState({ ...state, showPassword: !state.showPassword });
+  }
+
+  if (props.isAuthenticated) {
+    return <Redirect to="/dashboard" />;
   }
 
   // if (props.state.auth.isAuthenticated) {
