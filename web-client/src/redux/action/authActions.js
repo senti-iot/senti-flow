@@ -73,7 +73,6 @@ export const loginUser = userData => dispatch => {
         if (res.data.isLoggedIn) {
           if (setToken()) {
             dispatch(setCurrentUser(res.data));
-
             const sessionHeader = create({
               baseURL: backendHost,
               timeout: 30000,
@@ -119,4 +118,5 @@ export const logOut = () => async dispatch => {
   cookie.remove("SESSION");
   dispatch(setCurrentUser({}));
   dispatch(setCurrentProfile({}));
+  return true;
 };

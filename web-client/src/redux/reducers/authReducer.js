@@ -4,7 +4,8 @@ import { SET_CURRENT_USER, SET_CURRENT_PROFILE } from "../action/actionTypes";
 const initialState = {
   isAuthenticated: false,
   user: {},
-  profile: {}
+  profile: {},
+  loading: true
 };
 
 export default function(state = initialState, action) {
@@ -19,7 +20,8 @@ export default function(state = initialState, action) {
     case SET_CURRENT_PROFILE:
       return {
         ...state,
-        profile: action.payload
+        profile: action.payload,
+        loading: false
       };
 
     default:

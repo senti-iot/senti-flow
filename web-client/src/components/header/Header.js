@@ -6,7 +6,8 @@ import { makeStyles } from "@material-ui/core/styles";
 import Toolbar from "@material-ui/core/Toolbar";
 import Typography from "@material-ui/core/Typography";
 import React from "react";
-import { useHistory, useLocation } from "react-router";
+import Gravatar from "react-gravatar";
+import { useHistory, useLocation, Redirect } from "react-router";
 import ProfileImage from "../../assets/images/profile.png";
 import PowerSettingsNewIcon from "@material-ui/icons/PowerSettingsNew";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
@@ -72,7 +73,6 @@ function Header(props) {
 
   const handleLogout = () => {
     props.logOut();
-    history.push("/login");
   };
 
   const user = props.auth.profile;
@@ -89,10 +89,11 @@ function Header(props) {
             <MenuItem onClick={handleMenu}>
               <ExpandMoreIcon></ExpandMoreIcon>
               {`${user.firstName}`}
-              <img
-                className={classes.profileImageStyle}
-                src={ProfileImage}
+
+              <Gravatar
                 alt="Profile"
+                className={classes.profileImageStyle}
+                email={user.email}
               />
             </MenuItem>
 
@@ -135,6 +136,7 @@ function Header(props) {
 }
 
 const mapStateToProps = state => ({
+  isAuthenticated: state.auth.isAuthenticated,
   auth: state.auth
 });
 

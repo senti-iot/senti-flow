@@ -6,6 +6,7 @@ import MapView from "./MapView";
 import Filter from "./Filter";
 import StatusContainer from "./StatusContainer";
 import Header from "../header/Header";
+import Spinner from "../Spinner";
 import { setToken } from "../../redux/action/authActions";
 import cookie from "react-cookies";
 import { connect } from "react-redux";
@@ -18,36 +19,38 @@ const useStyles = makeStyles(theme => ({
 
 function Dashboard(props) {
   const classes = useStyles();
-  const history = useHistory();
-  const location = useLocation();
 
-  useEffect(() => {
-    console.log("Rendered!");
-    // if (!props.isAuthenticated) {
-    //   return <Redirect to="/login" />;
-    // }
-  });
+  if (!props.loading && !props.isAuthenticated) {
+    return <Redirect to="/login" />;
+  }
 
-  // if (!props.isAuthenticated) {
-  //   return <Redirect to="/login" />;
-  // }
-
-  return (
-    <>
-      <Header />
-      <Grid className={classes.container} container>
-        <MapView />
-        <Filter />
-        <StatusContainer />
-      </Grid>
-    </>
-  );
+  let dashboardContent;
+  if (props.loading) {
+    dashboardContent = (
+      <>
+        <Spinner />
+      </>
+    );
+  } else if (props.isAuthenticated) {
+    dashboardContent = (
+      <>
+        <Header />
+        <Grid className={classes.container} container>
+          <MapView />
+          <Filter />
+          <StatusContainer />
+        </Grid>
+      </>
+    );
+  }
+  return <>{dashboardContent}</>;
 }
 
 const mapStateToProps = state => ({
   isAuthenticated: state.auth.isAuthenticated,
   auth: state.auth,
-  profile: state.auth.profile
+  profile: state.auth.profile,
+  loading: state.auth.loading
 });
 
 export default connect(mapStateToProps, {})(Dashboard);
