@@ -1,25 +1,19 @@
 import Button from "@material-ui/core/Button";
+import Card from "@material-ui/core/Card";
 import Grid from "@material-ui/core/Grid";
+import IconButton from "@material-ui/core/IconButton";
+import InputAdornment from "@material-ui/core/InputAdornment";
 import { makeStyles } from "@material-ui/core/styles";
 import TextField from "@material-ui/core/TextField";
-import React, { useState, useEffect } from "react";
-import cookie from "react-cookies";
-import { connect } from "react-redux";
-import {
-  loginUser,
-  setToken,
-  setCurrentProfile
-} from "../../redux/action/authActions";
-import Logo from "../../assets/images/senti.flow.png";
-import InputAdornment from "@material-ui/core/InputAdornment";
-import Card from "@material-ui/core/Card";
-import IconButton from "@material-ui/core/IconButton";
+import OrgIcon from "@material-ui/icons/Domain";
 import AccountIcon from "@material-ui/icons/Person";
 import Visibility from "@material-ui/icons/Visibility";
 import VisibilityOff from "@material-ui/icons/VisibilityOff";
-import OrgIcon from "@material-ui/icons/Domain";
-import { useHistory, useLocation, Redirect } from "react-router";
-import { __esModule } from "react-cookies";
+import React, { useState, useEffect } from "react";
+import { connect } from "react-redux";
+import { Redirect } from "react-router";
+import Logo from "../../assets/images/senti.flow.png";
+import { loginUser } from "../../redux/action/authActions";
 
 const useStyles = makeStyles(theme => ({
   gridFlex: {
@@ -77,7 +71,6 @@ function Login(props) {
       orgNickname: state.orgId
     };
     props.loginUser(userData);
-    // console.log(props.isAuthenticated);
   }
 
   function handleShowPassword() {
@@ -88,25 +81,21 @@ function Login(props) {
     return <Redirect to="/dashboard" />;
   }
 
-  // if (props.state.auth.isAuthenticated) {
-  //   history.push("/dashboard");
-  // }
-
-  // useEffect(() => {
-  //   var loginData = cookie.load("SESSION");
-  //   if (loginData) {
-  //     if (setToken()) {
-  //       history.push("/dashboard");
-  //     }
-  //   }
-  // }, [location, history]);
+  function setFieldError() {
+    let text = props.error;
+    if (Object.entries(text).length != 0) {
+      return true;
+    }
+  }
 
   return (
     <Grid item className={classes.gridFlex} xs={12}>
       <form onSubmit={handleSubmit}>
         <Card className={(classes.card, classes.gridFlex)}>
           <img className={classes.logoStyle} src={Logo} alt="Senti Flow" />
+
           <TextField
+            error={setFieldError()}
             onChange={handleChange}
             id="outlined-email-input"
             name="email"
@@ -128,6 +117,7 @@ function Login(props) {
           />
 
           <TextField
+            error={setFieldError()}
             onChange={handleChange}
             id="outlined-password-input"
             name="password"
@@ -149,6 +139,7 @@ function Login(props) {
           />
 
           <TextField
+            error={setFieldError()}
             onChange={handleChange}
             id="outlined-orgId-input"
             name="orgId"
@@ -185,11 +176,10 @@ function Login(props) {
 }
 
 const mapStateToProps = state => ({
+  user: state.auth.profile,
+  loading: state.auth.loading,
   isAuthenticated: state.auth.isAuthenticated,
-  auth: state.auth,
-  profile: state.auth.profile
+  error: state.auth.error
 });
 
-export default connect(mapStateToProps, { loginUser, setCurrentProfile })(
-  Login
-);
+export default connect(mapStateToProps, { loginUser })(Login);

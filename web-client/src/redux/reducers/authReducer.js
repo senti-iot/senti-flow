@@ -1,26 +1,41 @@
-import isEmpty from "../../validation/is-empty";
-import { SET_CURRENT_USER, SET_CURRENT_PROFILE } from "../action/actionTypes";
+import {
+  SET_ERROR,
+  LOGIN_USER,
+  LOGOUT_USER,
+  SET_CURRENT_USER
+} from "../action/actionTypes";
 
 const initialState = {
   isAuthenticated: false,
   user: {},
-  profile: {},
+  error: {},
   loading: true
 };
 
 export default function(state = initialState, action) {
   switch (action.type) {
+    case SET_ERROR:
+      return {
+        ...state,
+        error: action.payload
+      };
+
+    case LOGIN_USER:
+      return {
+        ...state,
+        isAuthenticated: true
+      };
+
+    case LOGOUT_USER:
+      return {
+        ...state,
+        isAuthenticated: false
+      };
+
     case SET_CURRENT_USER:
       return {
         ...state,
-        isAuthenticated: !isEmpty(action.payload),
-        user: action.payload
-      };
-
-    case SET_CURRENT_PROFILE:
-      return {
-        ...state,
-        profile: action.payload,
+        user: action.payload,
         loading: false
       };
 
