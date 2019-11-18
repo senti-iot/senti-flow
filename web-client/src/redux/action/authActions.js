@@ -2,21 +2,23 @@ import axios from "axios";
 import cookie from "react-cookies";
 import moment from "moment";
 import { create } from "apisauce";
-import { SET_CURRENT_USER, SET_CURRENT_PROFILE } from "./actionTypes";
+import {
+  SET_CURRENT_USER,
+  LOGIN_USER,
+  LOGOUT_USER,
+  SET_ERROR
+} from "./actionTypes";
 
-let backendHost, sentiAPI;
+let backendHost;
 
 const hostname = window && window.location && window.location.hostname;
 
 if (hostname === "console.senti.cloud") {
   backendHost = "https://senti.cloud/rest/";
-  sentiAPI = "https://api.senti.cloud/";
 } else if (hostname === "beta.senti.cloud") {
   backendHost = "https://betabackend.senti.cloud/rest/";
-  sentiAPI = "https://dev.api.senti.cloud/";
 } else {
   backendHost = "https://betabackend.senti.cloud/rest/";
-  sentiAPI = "https://dev.api.senti.cloud/";
 }
 
 const api = create({
@@ -39,18 +41,9 @@ const imageApi = create({
   }
 });
 
-export const loginApi = create({
-  baseURL: backendHost,
-  timout: 30000,
-  headers: {
-    Accept: "application/json",
-    "Content-Type": "application/json"
-  }
-});
-
 export const setToken = () => {
   try {
-    var OAToken = cookie.load("SESSION").sessionID;
+    var OAToken = cookie.load("SESSION").data.sessionID;
     api.setHeader("ODEUMAuthToken", OAToken);
     imageApi.setHeader("ODEUMAuthToken", OAToken);
     return true;
@@ -60,63 +53,85 @@ export const setToken = () => {
 };
 setToken();
 
-export const loginUser = userData => dispatch => {
-  axios
-    .post(
-      "https://betabackend.senti.cloud/rest/odeum/auth/organization",
-      userData
-    )
+export const loginUser = userData => async dispatch => {
+  await api
+    .post(`odeum/auth/organization`, userData)
     .then(res => {
-      if (res.data) {
+      if (res.data.isLoggedIn) {
         let exp = moment().add("1", "day");
         cookie.save("SESSION", res, { path: "/", expires: exp.toDate() });
-        if (res.data.isLoggedIn) {
-          if (setToken()) {
-            dispatch(setCurrentUser(res.data));
-            const sessionHeader = create({
-              baseURL: backendHost,
-              timeout: 30000,
-              headers: {
-                Accept: "application/json",
-                "Content-Type": "application/json",
-                ODEUMAuthToken: res.data.sessionID
-              }
-            });
 
-            axios
-              .get(
-                "https://betabackend.senti.cloud/rest/core/user/" +
-                  res.data.userID,
-                sessionHeader
-              )
-              .then(res => {
-                dispatch(setCurrentProfile(res.data));
-              });
-          }
+        if (setToken()) {
+          console.log("SET");
+          dispatch(setUser());
         }
       }
-    });
+    })
+    .catch(() => dispatch(setError({ message: "Invalid credentials" })));
 };
 
-export const setCurrentUser = user => {
+export const getUser = () => async dispatch => {
+  if (cookie.load("SESSION")) {
+    const userID = cookie.load("SESSION").data.userID;
+    await api.get(`/core/user/${userID}`).then(res => {
+      dispatch(setUserInfo(res.data));
+    });
+  }
+};
+
+export const setUserInfo = user => {
   return {
     type: SET_CURRENT_USER,
-    payload: user
+    payload: user,
+    loading: false
   };
 };
 
-export const setCurrentProfile = profile => {
+export const setUser = () => {
   return {
-    type: SET_CURRENT_PROFILE,
-    payload: profile
+    type: LOGIN_USER,
+    isAuthenticated: true
+  };
+};
+
+export const logoutUser = () => {
+  return {
+    type: LOGOUT_USER,
+    isAuthenticated: false
   };
 };
 
 export const logOut = () => async dispatch => {
   var session = cookie.load("SESSION");
-  var data = await loginApi.delete(`odeum/auth/${session.sessionID}`);
+  await api.delete(`odeum/auth/${session.sessionID}`);
   cookie.remove("SESSION");
-  dispatch(setCurrentUser({}));
-  dispatch(setCurrentProfile({}));
-  return true;
+  dispatch(setUser({}));
+  dispatch(setUserInfo({}));
+  dispatch(logoutUser({}));
+};
+
+export const validateSession = async () => {
+  if (cookie.load("SESSION") && cookie.load("SESSION").data.sessionID != null) {
+    const sessionID = cookie.load("SESSION").data.sessionID;
+    const userID = cookie.load("SESSION").data.userID;
+    if (sessionID && userID) {
+      await api.get(`/core/user/${userID}`).then(rs => {
+        if (rs.status === 200) {
+          cookie.load("SESSION");
+        } else {
+          logOut();
+          cookie.remove("SESSION");
+        }
+      });
+    }
+  } else {
+    logOut();
+  }
+};
+
+export const setError = error => {
+  return {
+    type: SET_ERROR,
+    payload: error
+  };
 };

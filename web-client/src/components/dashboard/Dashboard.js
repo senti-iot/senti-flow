@@ -1,15 +1,14 @@
-import React, { useEffect } from "react";
-import { useHistory, useLocation, Redirect } from "react-router";
 import Grid from "@material-ui/core/Grid";
 import { makeStyles } from "@material-ui/core/styles";
-import MapView from "./MapView";
-import Filter from "./Filter";
-import StatusContainer from "./StatusContainer";
+import React, { useEffect } from "react";
+import { connect } from "react-redux";
+import { Redirect } from "react-router";
+import { getUser } from "../../redux/action/authActions";
 import Header from "../header/Header";
 import Spinner from "../Spinner";
-import { setToken } from "../../redux/action/authActions";
-import cookie from "react-cookies";
-import { connect } from "react-redux";
+import Filter from "./Filter";
+import MapView from "./MapView";
+import StatusContainer from "./StatusContainer";
 
 const useStyles = makeStyles(theme => ({
   container: {
@@ -20,7 +19,11 @@ const useStyles = makeStyles(theme => ({
 function Dashboard(props) {
   const classes = useStyles();
 
-  if (!props.loading && !props.isAuthenticated) {
+  useEffect(() => {
+    props.getUser();
+  }, []);
+
+  if (!props.isAuthenticated) {
     return <Redirect to="/login" />;
   }
 
@@ -31,7 +34,7 @@ function Dashboard(props) {
         <Spinner />
       </>
     );
-  } else if (props.isAuthenticated) {
+  } else if (props.user) {
     dashboardContent = (
       <>
         <Header />
@@ -47,10 +50,10 @@ function Dashboard(props) {
 }
 
 const mapStateToProps = state => ({
-  isAuthenticated: state.auth.isAuthenticated,
   auth: state.auth,
-  profile: state.auth.profile,
-  loading: state.auth.loading
+  user: state.auth.user,
+  loading: state.auth.loading,
+  isAuthenticated: state.auth.isAuthenticated
 });
 
-export default connect(mapStateToProps, {})(Dashboard);
+export default connect(mapStateToProps, { getUser })(Dashboard);

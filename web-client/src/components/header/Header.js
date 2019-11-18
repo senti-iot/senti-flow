@@ -1,18 +1,15 @@
 import AppBar from "@material-ui/core/AppBar";
-import IconButton from "@material-ui/core/IconButton";
 import Menu from "@material-ui/core/Menu";
 import MenuItem from "@material-ui/core/MenuItem";
 import { makeStyles } from "@material-ui/core/styles";
 import Toolbar from "@material-ui/core/Toolbar";
 import Typography from "@material-ui/core/Typography";
+import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
+import PowerSettingsNewIcon from "@material-ui/icons/PowerSettingsNew";
 import React from "react";
 import Gravatar from "react-gravatar";
-import { useHistory, useLocation, Redirect } from "react-router";
-import ProfileImage from "../../assets/images/profile.png";
-import PowerSettingsNewIcon from "@material-ui/icons/PowerSettingsNew";
-import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
-import Logo from "../../assets/images/senti.flow.negativ.png";
 import { connect } from "react-redux";
+import Logo from "../../assets/images/senti.flow.negativ.png";
 import { logOut } from "../../redux/action/authActions";
 
 const useStyles = makeStyles(theme => ({
@@ -33,7 +30,6 @@ const useStyles = makeStyles(theme => ({
     height: "50px"
   },
   profileImageStyle: {
-    height: "35px",
     borderRadius: "50%",
     marginLeft: "10px"
   },
@@ -60,9 +56,6 @@ function Header(props) {
   const [anchorEl, setAnchorEl] = React.useState(null);
   const open = Boolean(anchorEl);
 
-  const history = useHistory();
-  const location = useLocation();
-
   const handleMenu = event => {
     setAnchorEl(event.currentTarget);
   };
@@ -75,7 +68,7 @@ function Header(props) {
     props.logOut();
   };
 
-  const user = props.auth.profile;
+  const user = props.auth.user;
 
   return (
     <div>
@@ -92,6 +85,7 @@ function Header(props) {
 
               <Gravatar
                 alt="Profile"
+                size={40}
                 className={classes.profileImageStyle}
                 email={user.email}
               />
@@ -136,8 +130,10 @@ function Header(props) {
 }
 
 const mapStateToProps = state => ({
-  isAuthenticated: state.auth.isAuthenticated,
-  auth: state.auth
+  auth: state.auth,
+  user: state.auth.user,
+  loading: state.auth.loading,
+  isAuthenticated: state.auth.isAuthenticated
 });
 
 export default connect(mapStateToProps, { logOut })(Header);
