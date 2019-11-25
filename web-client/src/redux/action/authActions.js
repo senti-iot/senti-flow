@@ -60,9 +60,7 @@ export const loginUser = userData => async dispatch => {
       if (res.data.isLoggedIn) {
         let exp = moment().add("1", "day");
         cookie.save("SESSION", res, { path: "/", expires: exp.toDate() });
-
         if (setToken()) {
-          console.log("SET");
           dispatch(setUser());
         }
       }
