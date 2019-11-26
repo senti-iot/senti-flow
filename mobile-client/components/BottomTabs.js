@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import { View, StyleSheet, Text, Image, Button } from "react-native";
-import { BottomNavigation } from "react-native-paper";
+import { View, StyleSheet, Image, Button } from "react-native";
+import { BottomNavigation, Text, Surface } from "react-native-paper";
 
 const HomeRoute = () => <Text>Home</Text>;
 const CommunicationRoute = () => <Text>Communication</Text>;
@@ -10,9 +10,13 @@ const BottomTabs = () => {
   const [state, setState] = useState({
     index: 0,
     routes: [
-      { key: "home", icon: "album" },
-      { key: "communication", icon: "album" },
-      { key: "map", icon: "album" }
+      { key: "home", title: "Home", icon: "home" },
+      {
+        key: "communication",
+        title: "Communication",
+        icon: "plus-circle-outline"
+      },
+      { key: "map", title: "Map", icon: "map" }
     ]
   });
 
@@ -26,6 +30,8 @@ const BottomTabs = () => {
 
   return (
     <BottomNavigation
+      labeled={false}
+      shifting={false}
       barStyle={styles.footer}
       navigationState={state}
       onIndexChange={_handleIndexChange}
@@ -36,7 +42,8 @@ const BottomTabs = () => {
 
 const styles = StyleSheet.create({
   footer: {
-    height: 100,
+    paddingTop: 8,
+    height: 70,
     backgroundColor: "#1a1a32"
   }
 });

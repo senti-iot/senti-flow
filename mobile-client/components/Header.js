@@ -7,7 +7,7 @@ import {
   Button,
   TouchableHighlight
 } from "react-native";
-import { Appbar, Menu } from "react-native-paper";
+import { Appbar, Avatar, Menu } from "react-native-paper";
 import Logo from "../assets/logo1.png";
 import Profile from "../assets/profile.png";
 
@@ -20,15 +20,11 @@ const Header = () => {
     <Appbar.Header style={styles.header}>
       <Image resizeMode={"contain"} style={styles.logo} source={Logo} />
       <Menu
-        style={{ marginTop: 50 }}
+        style={styles.menu}
         onDismiss={handleMenuVisibale}
         anchor={
           <TouchableHighlight onPress={handleMenuVisibale}>
-            <Image
-              resizeMode={"contain"}
-              style={styles.profile}
-              source={Profile}
-            />
+            <Avatar.Image size={45} source={Profile} />
           </TouchableHighlight>
         }
         visible={menuVisible}
@@ -41,23 +37,18 @@ const Header = () => {
 
 const styles = StyleSheet.create({
   header: {
-    height: 100,
     paddingLeft: "5%",
-    paddingRight: "5%",
+    paddingBottom: "5%",
+    height: 75,
     backgroundColor: "#1a1a32",
     alignItems: "center",
     alignContent: "center",
     justifyContent: "space-between"
   },
+  menu: { marginTop: 50 },
   logo: {
     height: 50,
     width: 160
-  },
-  profile: {
-    // borderRadius: 50,
-    height: 45,
-    width: 45,
-    borderRadius: 100
   }
 });
 
