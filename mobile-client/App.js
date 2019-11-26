@@ -1,15 +1,25 @@
 import React from "react";
-import { StyleSheet, Text, View, Image } from "react-native";
-import { Provider as PaperProvider } from "react-native-paper";
+import { DefaultTheme, Provider as PaperProvider } from "react-native-paper";
+import Footer from "./components/Footer";
 import Header from "./components/Header";
-import BottomTabs from "./components/BottomTabs";
-// import Icon from "react-native-vector-icons/Ionicons";
+import Login from "./components/Login";
 
 export default function App(props) {
+  const theme = {
+    ...DefaultTheme,
+    colors: {
+      ...DefaultTheme.colors,
+      primary: "#1a1a32",
+      accent: "#f1c40f"
+    }
+  };
+
   return (
-    <PaperProvider>
+    <PaperProvider theme={theme}>
       <Header />
-      <BottomTabs />
+      <Login />
+      {/* <BottomTabs /> */}
+      <Footer />
     </PaperProvider>
   );
 }

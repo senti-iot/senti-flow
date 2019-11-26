@@ -1,8 +1,9 @@
 import React, { useState } from "react";
-import { View, StyleSheet, Image, Button } from "react-native";
-import { BottomNavigation, Text, Surface } from "react-native-paper";
+import { StyleSheet } from "react-native";
+import { BottomNavigation, Text } from "react-native-paper";
+import Home from "../components/Home";
 
-const HomeRoute = () => <Text>Home</Text>;
+const HomeRoute = () => <Home />;
 const CommunicationRoute = () => <Text>Communication</Text>;
 const MapRoute = () => <Text>Map</Text>;
 

@@ -1,12 +1,5 @@
 import React, { useState } from "react";
-import {
-  View,
-  StyleSheet,
-  Text,
-  Image,
-  Button,
-  TouchableHighlight
-} from "react-native";
+import { Image, StyleSheet, TouchableHighlight } from "react-native";
 import { Appbar, Avatar, Menu } from "react-native-paper";
 import Logo from "../assets/logo1.png";
 import Profile from "../assets/profile.png";
@@ -38,6 +31,7 @@ const Header = () => {
 const styles = StyleSheet.create({
   header: {
     paddingLeft: "5%",
+    paddingRight: "5%",
     paddingBottom: "5%",
     height: 75,
     backgroundColor: "#1a1a32",
