@@ -21,7 +21,7 @@ function Dashboard(props) {
 
   useEffect(() => {
     props.getUser();
-  }, []);
+  }, [props]);
 
   if (!props.isAuthenticated) {
     return <Redirect to="/login" />;
