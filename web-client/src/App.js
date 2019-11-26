@@ -19,7 +19,7 @@ function App(props) {
       validateSession();
       props.setUser();
     }
-  }, [cookie.load("SESSION")]);
+  }, [props]);
 
   return (
     <BrowserRouter>

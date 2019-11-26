@@ -1,4 +1,3 @@
-import axios from "axios";
 import cookie from "react-cookies";
 import moment from "moment";
 import { create } from "apisauce";
@@ -103,9 +102,9 @@ export const logOut = () => async dispatch => {
   var session = cookie.load("SESSION");
   await api.delete(`odeum/auth/${session.sessionID}`);
   cookie.remove("SESSION");
-  dispatch(setUser({}));
-  dispatch(setUserInfo({}));
   dispatch(logoutUser({}));
+  dispatch(setUserInfo({}));
+  dispatch(setUser({}));
 };
 
 export const validateSession = async () => {

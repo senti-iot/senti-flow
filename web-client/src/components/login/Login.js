@@ -9,7 +9,7 @@ import OrgIcon from "@material-ui/icons/Domain";
 import AccountIcon from "@material-ui/icons/Person";
 import Visibility from "@material-ui/icons/Visibility";
 import VisibilityOff from "@material-ui/icons/VisibilityOff";
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { connect } from "react-redux";
 import { Redirect } from "react-router";
 import Logo from "../../assets/images/senti.flow.png";
@@ -83,7 +83,7 @@ function Login(props) {
 
   function setFieldError() {
     let text = props.error;
-    if (Object.entries(text).length != 0) {
+    if (Object.entries(text).length !== 0) {
       return true;
     }
   }
