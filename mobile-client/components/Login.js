@@ -18,8 +18,8 @@ const api = create({
 
 const Login = props => {
   const [state, setState] = useState({
-    username: "hevgo2012@gmail.com",
-    password: "hevger12",
+    username: "",
+    password: "",
     orgNickname: "sentiFlow"
   });
 
