@@ -47,13 +47,15 @@ export default function App(props) {
 
   const handleLogOut = async () => {
     await AsyncStorage.removeItem("userID");
+    await AsyncStorage.removeItem("sessionID");
+    await AsyncStorage.removeItem("userAvatar");
     setLoading(true);
     setAuthorized(false);
   };
 
   return (
     <PaperProvider theme={theme}>
-      <Header logOut={handleLogOut} />
+      <Header authorized={authorized} logOut={handleLogOut} />
       {loading ? (
         <ActivityIndicator
           style={{ marginTop: "50%" }}

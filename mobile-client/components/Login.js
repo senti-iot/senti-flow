@@ -4,6 +4,7 @@ import { Button, TextInput, HelperText } from "react-native-paper";
 import ErrorMessage from "./ErrorMessage";
 import ErrorDialog from "./Dialog";
 import { create } from "apisauce";
+import md5 from "md5";
 
 const api = create({
   baseURL: "https://betabackend.senti.cloud/rest/",
@@ -23,11 +24,16 @@ const Login = props => {
   });
 
   const storeUserData = async userData => {
+    getUserAvatar = `https://www.gravatar.com/avatar/${md5(
+      state.username.toLocaleLowerCase()
+    )}?s=200`;
+
     try {
       await AsyncStorage.multiSet(
         [
           ["userID", JSON.stringify(userData.userID)],
-          ["sessionID", JSON.stringify(userData.sessionID)]
+          ["sessionID", JSON.stringify(userData.sessionID)],
+          ["userAvatar", getUserAvatar]
         ],
         () => props.isLoggedIn()
       );
