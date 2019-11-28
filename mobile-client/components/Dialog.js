@@ -11,7 +11,7 @@ const ErrorDialog = props => {
           <Paragraph>{props.message}</Paragraph>
         </Dialog.Content>
         <Dialog.Actions>
-          <Button onPress={() => props.hideDialog()}>Done</Button>
+          <Button onPress={() => props.hideDialog()}>Ok!</Button>
         </Dialog.Actions>
       </Dialog>
     </Portal>
