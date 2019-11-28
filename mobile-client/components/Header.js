@@ -1,10 +1,15 @@
 import React, { useState } from "react";
-import { Image, StyleSheet, TouchableHighlight } from "react-native";
+import {
+  Image,
+  StyleSheet,
+  TouchableHighlight,
+  AsyncStorage
+} from "react-native";
 import { Appbar, Avatar, Menu } from "react-native-paper";
 import Logo from "../assets/logo1.png";
 import Profile from "../assets/profile.png";
 
-const Header = () => {
+const Header = props => {
   const [menuVisible, setMenuVisible] = useState(false);
 
   handleMenuVisibale = () => setMenuVisible(!menuVisible);
@@ -22,7 +27,7 @@ const Header = () => {
         }
         visible={menuVisible}
       >
-        <Menu.Item onPress={() => console.log("Logout!")} title="Logout" />
+        <Menu.Item onPress={() => props.logOut()} title="Logout" />
       </Menu>
     </Appbar.Header>
   );

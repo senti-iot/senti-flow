@@ -15,26 +15,26 @@ const api = create({
   }
 });
 
-const storeUserData = async userData => {
-  try {
-    await AsyncStorage.multiSet(
-      [
-        ["userID", JSON.stringify(userData.userID)],
-        ["sessionID", JSON.stringify(userData.sessionID)]
-      ],
-      () => console.log("User logged in !")
-    );
-  } catch (error) {
-    console.log(error);
-  }
-};
-
-const Login = () => {
+const Login = props => {
   const [state, setState] = useState({
-    username: "",
-    password: "",
+    username: "hevgo2012@gmail.com",
+    password: "hevger12",
     orgNickname: "sentiFlow"
   });
+
+  const storeUserData = async userData => {
+    try {
+      await AsyncStorage.multiSet(
+        [
+          ["userID", JSON.stringify(userData.userID)],
+          ["sessionID", JSON.stringify(userData.sessionID)]
+        ],
+        () => props.isLoggedIn()
+      );
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   const [errors, setErrors] = useState({
     usernameError: false,
@@ -134,7 +134,9 @@ const Login = () => {
         icon="lock-open"
         mode="contained"
         // onPress={() => loginUser(state)}
-        onPress={() => validate(state)}
+        onPress={() => {
+          validate(state);
+        }}
       >
         LOGIN
       </Button>
