@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Image,
   StyleSheet,
@@ -11,24 +11,38 @@ import Profile from "../assets/profile.png";
 
 const Header = props => {
   const [menuVisible, setMenuVisible] = useState(false);
-
+  const [userAvatar, setUserAvatar] = useState(
+    "https://www.gravatar.com/avatar/0?s=200"
+  );
   handleMenuVisibale = () => setMenuVisible(!menuVisible);
+
+  const getUserAvatar = async () => {
+    await AsyncStorage.getItem("userAvatar").then(avatar => {
+      setUserAvatar(avatar);
+    });
+  };
+
+  useEffect(() => {
+    getUserAvatar();
+  }, [userAvatar, props.authorized]);
 
   return (
     <Appbar.Header style={styles.header}>
       <Image resizeMode={"contain"} style={styles.logo} source={Logo} />
-      <Menu
-        style={styles.menu}
-        onDismiss={handleMenuVisibale}
-        anchor={
-          <TouchableHighlight onPress={handleMenuVisibale}>
-            <Avatar.Image size={45} source={Profile} />
-          </TouchableHighlight>
-        }
-        visible={menuVisible}
-      >
-        <Menu.Item onPress={() => props.logOut()} title="Logout" />
-      </Menu>
+      {props.authorized ? (
+        <Menu
+          style={styles.menu}
+          onDismiss={handleMenuVisibale}
+          anchor={
+            <TouchableHighlight onPress={handleMenuVisibale}>
+              <Avatar.Image size={45} source={{ uri: userAvatar }} />
+            </TouchableHighlight>
+          }
+          visible={menuVisible}
+        >
+          <Menu.Item onPress={() => props.logOut()} title="Logout" />
+        </Menu>
+      ) : null}
     </Appbar.Header>
   );
 };
