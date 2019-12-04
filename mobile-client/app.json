@@ -19,6 +19,13 @@
     "assetBundlePatterns": ["**/*"],
     "ios": {
       "supportsTablet": true
+    },
+    "android": {
+      "package": "com.senti.flow"
+    },
+    "notification": {
+      "icon": "./assets/icon.png",
+      "color": "#CCCCCC"
     }
   }
 }

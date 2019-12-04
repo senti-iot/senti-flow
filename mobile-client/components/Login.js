@@ -5,6 +5,7 @@ import ErrorMessage from "./ErrorMessage";
 import ErrorDialog from "./Dialog";
 import { create } from "apisauce";
 import md5 from "md5";
+import { TEST_USERNAME, TEST_PASSWORD, TEST_ORGID } from "react-native-dotenv";
 
 const api = create({
   baseURL: "https://betabackend.senti.cloud/rest/",
@@ -18,9 +19,9 @@ const api = create({
 
 const Login = props => {
   const [state, setState] = useState({
-    username: "",
-    password: "",
-    orgNickname: "sentiFlow"
+    username: TEST_USERNAME,
+    password: TEST_PASSWORD,
+    orgNickname: TEST_ORGID
   });
 
   const storeUserData = async userData => {
@@ -147,6 +148,7 @@ const Login = props => {
         LOGIN
       </Button>
       <ErrorDialog
+        title="Login"
         hideDialog={closeDialog}
         message="Email or password is incorrect !"
         showDialog={errors.incorrectLogin}

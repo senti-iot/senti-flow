@@ -6,7 +6,7 @@ const ErrorDialog = props => {
   return (
     <Portal>
       <Dialog visible={props.showDialog}>
-        <Dialog.Title>Login</Dialog.Title>
+        <Dialog.Title>{props.title}</Dialog.Title>
         <Dialog.Content>
           <Paragraph>{props.message}</Paragraph>
         </Dialog.Content>

@@ -4,6 +4,10 @@ import { Button, Text } from "react-native-paper";
 let buttonSize = Dimensions.get("window").height * 0.13;
 
 const Home = () => {
+  const sendStatus = status => {
+    console.log(status);
+  };
+
   return (
     <View style={styles.home}>
       <Button
@@ -11,7 +15,7 @@ const Home = () => {
         contentStyle={styles.button}
         color="#6dd400"
         mode="contained"
-        onPress={() => console.log("Pressed")}
+        onPress={() => sendStatus("altOk")}
       >
         Alt Ok
       </Button>
@@ -21,7 +25,7 @@ const Home = () => {
         contentStyle={styles.button}
         color="#ffd200"
         mode="contained"
-        onPress={() => console.log("Pressed")}
+        onPress={() => sendStatus("staaStille")}
       >
         Stå Stille
       </Button>
@@ -31,7 +35,7 @@ const Home = () => {
         contentStyle={styles.button}
         color="#ffd200"
         mode="contained"
-        onPress={() => console.log("Pressed")}
+        onPress={() => sendStatus("traeghed")}
       >
         Træghed
       </Button>
@@ -41,7 +45,7 @@ const Home = () => {
         contentStyle={styles.button}
         color="#e01f20"
         mode="contained"
-        onPress={() => console.log("Pressed")}
+        onPress={() => sendStatus("samarit")}
       >
         Brug for samarit
       </Button>
@@ -51,7 +55,7 @@ const Home = () => {
         contentStyle={styles.button}
         color="#e01f20"
         mode="contained"
-        onPress={() => console.log("Pressed")}
+        onPress={() => sendStatus("politi")}
       >
         Politi!
       </Button>
