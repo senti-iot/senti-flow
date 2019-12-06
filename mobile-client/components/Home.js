@@ -1,17 +1,28 @@
-import React from "react";
-import { View, Dimensions, StyleSheet } from "react-native";
+import React, { useState } from "react";
+import { View, Dimensions, AsyncStorage, StyleSheet } from "react-native";
 import { Button, Text } from "react-native-paper";
+import * as mqttActions from "../utilities/MQTT";
+
 let buttonSize = Dimensions.get("window").height * 0.13;
 
 const Home = () => {
-  const sendStatus = status => {
-    console.log(status);
+  mqttActions.makeConnection();
+
+  const icon = {
+    source: "check-circle-outline",
+    direction: "ltr"
+  };
+
+  const sendStatus = async status => {
+    data = { userStatus: status, userID: await AsyncStorage.getItem("userID") };
+    mqttActions.sendData(JSON.stringify(data), "userStatus");
   };
 
   return (
     <View style={styles.home}>
       <Button
         labelStyle={styles.whiteButtonLabel}
+        icon={true ? icon : null}
         contentStyle={styles.button}
         color="#6dd400"
         mode="contained"
@@ -72,7 +83,8 @@ const styles = StyleSheet.create({
   },
   button: {
     alignSelf: "center",
-    height: buttonSize
+    height: buttonSize,
+    writingDirection: "rtl"
   },
   whiteButtonLabel: {
     color: "#FFFFFF"
