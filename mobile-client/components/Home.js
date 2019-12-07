@@ -1,75 +1,85 @@
-import React, { useState } from "react";
-import { View, Dimensions, AsyncStorage, StyleSheet } from "react-native";
-import { Button, Text } from "react-native-paper";
-import * as mqttActions from "../utilities/MQTT";
+import React, { useState } from 'react';
+import { View, AsyncStorage, StyleSheet } from 'react-native';
+import * as mqttActions from '../utilities/MQTT';
+import StatusButton from './StatusButton';
 
-let buttonSize = Dimensions.get("window").height * 0.13;
+mqttActions.makeConnection();
 
+const sendStatus = async status => {
+  data = { userStatus: status, userID: await AsyncStorage.getItem('userID') };
+  mqttActions.sendData(JSON.stringify(data), 'userStatus');
+};
 const Home = () => {
-  mqttActions.makeConnection();
+  const [status, setStatus] = useState([
+    { title: 'Alt Ok', isActive: true },
+    { title: 'Stå Stille', isActive: false },
+    { title: 'Træghed', isActive: false },
+    { title: 'Brug for samarit', isActive: false },
+    { title: 'Politi!', isActive: false }
+  ]);
 
-  const icon = {
-    source: "check-circle-outline",
-    direction: "ltr"
-  };
-
-  const sendStatus = async status => {
-    data = { userStatus: status, userID: await AsyncStorage.getItem("userID") };
-    mqttActions.sendData(JSON.stringify(data), "userStatus");
+  const handleActive = i => {
+    const updatedStatus = [...status];
+    updatedStatus.forEach((s, idx) => {
+      idx === i ? (s.isActive = !s.isActive) : (s.isActive = false);
+    });
+    setStatus(updatedStatus);
   };
 
   return (
     <View style={styles.home}>
-      <Button
-        labelStyle={styles.whiteButtonLabel}
-        icon={true ? icon : null}
-        contentStyle={styles.button}
-        color="#6dd400"
-        mode="contained"
-        onPress={() => sendStatus("altOk")}
-      >
-        Alt Ok
-      </Button>
+      <StatusButton
+        color='#6dd400'
+        label='White'
+        active={status[0].isActive}
+        onPress={() => {
+          sendStatus('altOk');
+          handleActive(0);
+        }}
+        title={status[0].title}
+      />
 
-      <Button
-        labelStyle={styles.blackButtonLabel}
-        contentStyle={styles.button}
-        color="#ffd200"
-        mode="contained"
-        onPress={() => sendStatus("staaStille")}
-      >
-        Stå Stille
-      </Button>
+      <StatusButton
+        color='#ffd200'
+        active={status[1].isActive}
+        onPress={() => {
+          sendStatus('staaStille');
+          handleActive(1);
+        }}
+        title={status[1].title}
+      />
 
-      <Button
-        labelStyle={styles.blackButtonLabel}
-        contentStyle={styles.button}
-        color="#ffd200"
-        mode="contained"
-        onPress={() => sendStatus("traeghed")}
-      >
-        Træghed
-      </Button>
+      <StatusButton
+        color='#ffd200'
+        active={status[2].isActive}
+        onPress={() => {
+          sendStatus('traeghed');
+          handleActive(2);
+        }}
+        title={status[2].title}
+      />
 
-      <Button
-        labelStyle={styles.whiteButtonLabel}
-        contentStyle={styles.button}
-        color="#e01f20"
-        mode="contained"
-        onPress={() => sendStatus("samarit")}
-      >
-        Brug for samarit
-      </Button>
+      <StatusButton
+        color='#e01f20'
+        label='White'
+        active={status[3].isActive}
+        onPress={() => {
+          sendStatus('samarit');
+          handleActive(3);
+        }}
+        title={status[3].title}
+      />
 
-      <Button
-        labelStyle={styles.whiteButtonLabel}
-        contentStyle={styles.button}
-        color="#e01f20"
-        mode="contained"
-        onPress={() => sendStatus("politi")}
-      >
-        Politi!
-      </Button>
+      <StatusButton
+        color='#e01f20'
+        label='White'
+        active={status[4].isActive}
+        onPress={() => {
+          sendStatus('politi');
+          handleActive(4);
+        }}
+        title={status[4].title}
+      />
     </View>
   );
 };
@@ -78,19 +88,8 @@ const styles = StyleSheet.create({
   home: {
     flex: 1,
     padding: 10,
-    flexDirection: "column",
-    justifyContent: "space-between"
-  },
-  button: {
-    alignSelf: "center",
-    height: buttonSize,
-    writingDirection: "rtl"
-  },
-  whiteButtonLabel: {
-    color: "#FFFFFF"
-  },
-  blackButtonLabel: {
-    color: "#000000"
+    flexDirection: 'column',
+    justifyContent: 'space-between'
   }
 });
 
