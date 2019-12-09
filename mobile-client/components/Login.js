@@ -47,6 +47,7 @@ const Login = props => {
     usernameError: false,
     passwordError: false,
     orgNicknameError: false,
+    notValidEmailError: false,
     incorrectLogin: false
   });
 
@@ -56,11 +57,23 @@ const Login = props => {
     (typeof value === "object" && Object.keys(value).length === 0) ||
     (typeof value === "string" && value.trim().length === 0);
 
+  validateEmail = text => {
+    let reg = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+    if (reg.test(text) === false) {
+      return false;
+    } else {
+      return true;
+    }
+  };
+
   const validate = userData => {
     const catchErrors = {};
     Object.keys(userData).forEach(function(inputField) {
       if (userData[inputField] == "") {
         catchErrors[inputField + "Error"] = true;
+      }
+      if (userData["username"] != "" && !validateEmail(userData["username"])) {
+        catchErrors["notValidEmailError"] = true;
       }
     });
 
@@ -88,6 +101,8 @@ const Login = props => {
     setErrors({ ...errors, incorrectLogin: false });
   };
 
+  let textMessage = "";
+
   return (
     <ScrollView style={styles.login}>
       <TextInput
@@ -97,13 +112,24 @@ const Login = props => {
         value={state.username}
         onChangeText={newValue => {
           setState({ ...state, username: newValue });
-          setErrors({ ...errors, usernameError: false });
+          setErrors({
+            ...errors,
+            usernameError: false,
+            notValidEmailError: false
+          });
         }}
       />
-      <ErrorMessage
-        textMessage="Email is required!"
-        show={errors.usernameError}
-      />
+      {errors.notValidEmailError ? (
+        <ErrorMessage
+          textMessage="Email is not valid!"
+          show={errors.notValidEmailError}
+        />
+      ) : (
+        <ErrorMessage
+          textMessage="Email is required!"
+          show={errors.usernameError}
+        />
+      )}
 
       <TextInput
         style={styles.inputStyle}
