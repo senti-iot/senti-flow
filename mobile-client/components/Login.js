@@ -124,11 +124,13 @@ const Login = props => {
           textMessage="Email is not valid!"
           show={errors.notValidEmailError}
         />
-      ) : (
+      ) : errors.usernameError ? (
         <ErrorMessage
           textMessage="Email is required!"
           show={errors.usernameError}
         />
+      ) : (
+        <ErrorMessage textMessage="" show={false} />
       )}
 
       <TextInput
