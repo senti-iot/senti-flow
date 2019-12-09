@@ -30,11 +30,11 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-export default function Filter() {
+export default function Filter(props) {
   const classes = useStyles();
 
   return (
-    <Grid Item className={classes.filterStyle} xs={2}>
+    <Grid item={true} className={classes.filterStyle} xs={2}>
       <AppBar className={classes.headerStyle} position="static">
         <Typography variant="h6" className={classes.title}>
           Filter
@@ -47,9 +47,9 @@ export default function Filter() {
             <Checkbox
               value="checkedB"
               color="primary"
-              labelStyle={{ color: "#16125f" }}
-              iconStyle={{ fill: "#16125f" }}
-              inputStyle={{ color: "#16125f" }}
+              labelstyle={{ color: "#16125f" }}
+              iconstyle={{ fill: "#16125f" }}
+              inputstyle={{ color: "#16125f" }}
               style={{ color: "#16125f" }}
               inputProps={{
                 "aria-label": "secondary checkbox"
@@ -64,9 +64,9 @@ export default function Filter() {
             <Checkbox
               value="checkedB"
               color="primary"
-              labelStyle={{ color: "#16125f" }}
-              iconStyle={{ fill: "#16125f" }}
-              inputStyle={{ color: "#16125f" }}
+              labelstyle={{ color: "#16125f" }}
+              iconstyle={{ fill: "#16125f" }}
+              inputstyle={{ color: "#16125f" }}
               style={{ color: "#16125f" }}
               inputProps={{
                 "aria-label": "secondary checkbox"

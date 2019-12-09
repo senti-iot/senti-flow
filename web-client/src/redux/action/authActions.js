@@ -100,7 +100,7 @@ export const logoutUser = () => {
 
 export const logOut = () => async dispatch => {
   var session = cookie.load("SESSION");
-  await api.delete(`odeum/auth/${session.sessionID}`);
+  await api.delete(`odeum/auth/${session.data.sessionID}`);
   cookie.remove("SESSION");
   dispatch(logoutUser({}));
   dispatch(setUserInfo({}));

@@ -43,21 +43,21 @@ export default function Status() {
     <Card className={classes.statusStyle}>
       <CardContent>
         <Grid container>
-          <Grid className={classes.profileImageWrapper} item xs="2">
+          <Grid className={classes.profileImageWrapper} item={true} xs={2}>
             <img
               className={classes.profileImageStyle}
               src={ProfileImage}
               alt="Profile"
             />
           </Grid>
-          <Grid className={classes.detailsBoxStyle} item xs="8">
+          <Grid className={classes.detailsBoxStyle} item={true} xs={8}>
             <Typography className={classes.vehicleNumber}>Vogn 12</Typography>
             <Typography className={classes.vehicleDetails}>
               Fart: 5 km/t
             </Typography>
             <Typography className={classes.vehicleDetails}>Alt ok</Typography>
           </Grid>
-          <Grid item xs="2">
+          <Grid item={true} xs={2}>
             <Typography className={classes.vehicleDetails}>10:46:10</Typography>
           </Grid>
         </Grid>

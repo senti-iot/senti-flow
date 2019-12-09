@@ -89,7 +89,7 @@ function Login(props) {
   }
 
   return (
-    <Grid item className={classes.gridFlex} xs={12}>
+    <Grid item={true} className={classes.gridFlex} xs={12}>
       <form onSubmit={handleSubmit}>
         <Card className={(classes.card, classes.gridFlex)}>
           <img className={classes.logoStyle} src={Logo} alt="Senti Flow" />

@@ -27,7 +27,7 @@ export default function StatusContainer() {
   const classes = useStyles();
 
   return (
-    <Grid Item className={classes.statusStyle} xs={3}>
+    <Grid item={true} className={classes.statusStyle} xs={3}>
       <AppBar className={classes.headerStyle} position="static">
         <Typography variant="h6" className={classes.title}>
           Status

@@ -46,14 +46,14 @@ export default function MessageBox() {
   const classes = useStyles();
   return (
     <Grid className={classes.messageBoxStyle} container>
-      <Grid item xs="9">
+      <Grid item={true} xs={9}>
         <TextareaAutosize
           rowsMax={3}
           rows={3}
           className={classes.messageFieldStyle}
         />
       </Grid>
-      <Grid item xs="3">
+      <Grid item={true} xs={3}>
         <Button
           variant={"contained"}
           fullWidth

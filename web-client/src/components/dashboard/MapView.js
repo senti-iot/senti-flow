@@ -15,7 +15,7 @@ export default function MapView() {
   const classes = useStyles();
 
   return (
-    <Grid Item className={classes.mapStyle} xs={7}>
+    <Grid className={classes.mapStyle} xs={7} item={true}>
       <Map
         maxZoom={19}
         center={["57.046662", "9.919612"]}
