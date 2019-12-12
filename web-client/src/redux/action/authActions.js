@@ -104,7 +104,6 @@ export const logOut = () => async dispatch => {
   cookie.remove("SESSION");
   dispatch(logoutUser({}));
   dispatch(setUserInfo({}));
-  dispatch(setUser({}));
 };
 
 export const validateSession = async () => {

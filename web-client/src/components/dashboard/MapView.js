@@ -13,7 +13,6 @@ const useStyles = makeStyles(theme => ({
 
 export default function MapView() {
   const classes = useStyles();
-
   return (
     <Grid className={classes.mapStyle} xs={7} item={true}>
       <Map
@@ -26,7 +25,7 @@ export default function MapView() {
           attribution='&amp;copy <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
-      </Map>{" "}
+      </Map>
       <MessageBox />
     </Grid>
   );

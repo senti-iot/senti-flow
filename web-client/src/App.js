@@ -10,16 +10,20 @@ import {
   setUser,
   validateSession
 } from "./redux/action/authActions";
+const whyDidYouRender = require("@welldone-software/why-did-you-render");
+whyDidYouRender(React);
 
 function App(props) {
+  const { logoutUser, setUser } = props;
+
   useEffect(() => {
     if (!cookie.load("SESSION")) {
-      props.logoutUser();
+      logoutUser();
     } else {
       validateSession();
-      props.setUser();
+      setUser();
     }
-  }, [props]);
+  }, [logoutUser, setUser]);
 
   return (
     <BrowserRouter>
