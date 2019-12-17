@@ -5,7 +5,14 @@ import ErrorMessage from "./ErrorMessage";
 import ErrorDialog from "./Dialog";
 import { create } from "apisauce";
 import md5 from "md5";
-import { TEST_USERNAME, TEST_PASSWORD, TEST_ORGID } from "react-native-dotenv";
+import uuidv4 from "uuid/v4";
+
+import {
+  TEST_USERNAME,
+  AUTHKEY,
+  TEST_PASSWORD,
+  TEST_ORGID
+} from "react-native-dotenv";
 
 const api = create({
   baseURL: "https://betabackend.senti.cloud/rest/",
@@ -14,6 +21,16 @@ const api = create({
     Accept: "application/json",
     "Content-Type": "application/json",
     ODEUMAuthToken: ""
+  }
+});
+
+const servicesApi = create({
+  baseURL: "https://services.senti.cloud/",
+  timeout: 30000,
+  headers: {
+    Accept: "application/json",
+    "Content-Type": "application/json",
+    auth: AUTHKEY
   }
 });
 
@@ -58,7 +75,7 @@ const Login = props => {
     (typeof value === "string" && value.trim().length === 0);
 
   validateEmail = text => {
-    let reg = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+    let reg = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,10})+$/;
     if (reg.test(text) === false) {
       return false;
     } else {
@@ -89,7 +106,54 @@ const Login = props => {
       .post(`odeum/auth/organization`, userData)
       .then(res => {
         if (res.status == 200) {
-          storeUserData(res.data);
+          // Set token
+          const user = res.data;
+          api.setHeader("ODEUMAuthToken", res.data.sessionID);
+
+          // Get user and check if user has device already
+          api.get(`/core/user/${res.data.userID}`).then(currentUser => {
+            if (currentUser.data.aux.senti.deviceOwner === undefined) {
+              // Device object
+              const device = {
+                reg_id: 23,
+                type_id: 34,
+                lat: 56.2639,
+                long: 9.5018,
+                address: "",
+                locType: 0,
+                available: 1,
+                name: `${uuidv4()}`,
+                customer_id: 138230100010160,
+                communication: 1,
+                description: `Denne enhed tilhører ${currentUser.data.firstName}  ${currentUser.data.lastName}`,
+                metadata: {
+                  inbound: [],
+                  outbound: [],
+                  metadata: {}
+                }
+              };
+
+              // Create device
+              servicesApi
+                .put(`databroker/v1/device`, device)
+                .then(createdDevice => {
+                  servicesApi
+                    .get(`databroker/v1/device/${createdDevice.data}`)
+                    .then(currentDevice => {
+                      // Assign device to user object
+                      currentUser.data.aux.senti.deviceOwner =
+                        currentDevice.data.uuid;
+
+                      // Update user with created device
+                      api
+                        .put(`/core/user/${res.data.userID}`, currentUser.data)
+                        .then(storeUserData(user));
+                    });
+                });
+            } else {
+              storeUserData(user);
+            }
+          });
         } else {
           setErrors({ ...errors, incorrectLogin: true });
         }

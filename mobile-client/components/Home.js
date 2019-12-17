@@ -6,7 +6,11 @@ import StatusButton from "./StatusButton";
 mqttActions.makeConnection();
 
 const sendStatus = async status => {
-  data = { userStatus: status, userID: await AsyncStorage.getItem("userID") };
+  data = {
+    userStatus: status,
+    userID: await AsyncStorage.getItem("userID"),
+    timestamp: Date.now()
+  };
   mqttActions.sendData(JSON.stringify(data), "userStatus");
 };
 const Home = () => {

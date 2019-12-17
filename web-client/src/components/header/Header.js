@@ -132,8 +132,7 @@ function Header(props) {
 const mapStateToProps = state => ({
   auth: state.auth,
   user: state.auth.user,
-  loading: state.auth.loading,
-  isAuthenticated: state.auth.isAuthenticated
+  loading: state.auth.loading
 });
 
 export default connect(mapStateToProps, { logOut })(Header);

@@ -33,7 +33,7 @@ function App(props) {
             <Login />
           </Route>
           <Route path="/dashboard">
-            <Dashboard />
+            <Dashboard cookie={cookie.load("SESSION")} />
           </Route>
         </Switch>
       </div>

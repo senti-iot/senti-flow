@@ -10,8 +10,8 @@ import {
 import * as Permissions from "expo-permissions";
 import * as TaskManager from "expo-task-manager";
 import * as Location from "expo-location";
-
 import * as mqttActions from "./utilities/MQTT";
+import PushNotification from "./components/PushNotification";
 
 // Components
 import Footer from "./components/Footer";
@@ -94,7 +94,7 @@ export default function App(props) {
           mayShowUserSettingsDialog: true,
           timeInterval: 2000,
           // distanceInterval: 1
-          deferredUpdatesInterval: 1000,
+          deferredUpdatesInterval: 2000,
           foregroundService: {
             notificationTitle: "Senti Flow",
             notificationBody: "The app is running",
@@ -132,6 +132,7 @@ export default function App(props) {
         showDialog={showError}
         hideDialog={closeDialog}
       />
+      <PushNotification />
     </PaperProvider>
   );
 }
