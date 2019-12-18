@@ -10,9 +10,10 @@ init({
   sync: {}
 });
 
-export const sendData = (data, topic) => {
+export const sendData = async data => {
+  let deviceUUID = await AsyncStorage.getItem("deviceUUID");
   var message = new Paho.MQTT.Message(data);
-  message.destinationName = topic;
+  message.destinationName = `v1/senti.flow-e2d2cc93/location/europe/registries/demo-register-9efe6cb6/devices/${deviceUUID}/publish`;
   client.send(message);
 };
 

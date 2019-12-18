@@ -7,11 +7,12 @@ mqttActions.makeConnection();
 
 const sendStatus = async status => {
   data = {
+    type: "userStatus",
     userStatus: status,
     userID: await AsyncStorage.getItem("userID"),
     timestamp: Date.now()
   };
-  mqttActions.sendData(JSON.stringify(data), "userStatus");
+  mqttActions.sendData(JSON.stringify(data));
 };
 const Home = () => {
   const [status, setStatus] = useState([

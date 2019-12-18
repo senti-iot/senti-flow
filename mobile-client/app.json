@@ -25,7 +25,8 @@
     },
     "notification": {
       "icon": "./assets/icon.png",
-      "color": "#CCCCCC"
+      "color": "#CCCCCC",
+      "iosDisplayInForeground": true
     }
   }
 }

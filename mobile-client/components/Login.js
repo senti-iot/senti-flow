@@ -41,25 +41,6 @@ const Login = props => {
     orgNickname: TEST_ORGID
   });
 
-  const storeUserData = async userData => {
-    getUserAvatar = `https://www.gravatar.com/avatar/${md5(
-      state.username.toLocaleLowerCase()
-    )}?s=200`;
-
-    try {
-      await AsyncStorage.multiSet(
-        [
-          ["userID", JSON.stringify(userData.userID)],
-          ["sessionID", JSON.stringify(userData.sessionID)],
-          ["userAvatar", getUserAvatar]
-        ],
-        () => props.isLoggedIn()
-      );
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
   const [errors, setErrors] = useState({
     usernameError: false,
     passwordError: false,
@@ -75,7 +56,7 @@ const Login = props => {
     (typeof value === "string" && value.trim().length === 0);
 
   validateEmail = text => {
-    let reg = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,10})+$/;
+    let reg = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,})+$/;
     if (reg.test(text) === false) {
       return false;
     } else {
@@ -101,6 +82,50 @@ const Login = props => {
     }
   };
 
+  const registerDevice = (currentUser, user) => {
+    // Device object
+    const device = {
+      reg_id: 23,
+      type_id: 34,
+      lat: 56.2639,
+      long: 9.5018,
+      address: "",
+      locType: 0,
+      available: 1,
+      name: `${uuidv4()}`,
+      customer_id: 138230100010160,
+      communication: 1,
+      description: `Denne enhed tilhører ${currentUser.data.firstName}  ${currentUser.data.lastName}`,
+      metadata: {
+        inbound: [],
+        outbound: [],
+        metadata: {}
+      }
+    };
+
+    // Create device
+    servicesApi
+      .put(`databroker/v1/device`, device)
+      .then(async createdDevice => {
+        // Assign device to user object
+        currentUser.data.aux.senti.deviceOwner = createdDevice.data;
+        let pushToken = await AsyncStorage.getItem("pushToken");
+        currentUser.data.aux.senti.pushToken = pushToken;
+
+        // Update user with created device
+        api.put(`/core/user/${user.userID}`, currentUser.data).then(() => {
+          // Store user data
+          servicesApi
+            .get(
+              `databroker/v1/device/${currentUser.data.aux.senti.deviceOwner}`
+            )
+            .then(userDevice => {
+              storeUserData(user, userDevice);
+            });
+        });
+      });
+  };
+
   const loginUser = async userData => {
     await api
       .post(`odeum/auth/organization`, userData)
@@ -112,46 +137,29 @@ const Login = props => {
 
           // Get user and check if user has device already
           api.get(`/core/user/${res.data.userID}`).then(currentUser => {
-            if (currentUser.data.aux.senti.deviceOwner === undefined) {
-              // Device object
-              const device = {
-                reg_id: 23,
-                type_id: 34,
-                lat: 56.2639,
-                long: 9.5018,
-                address: "",
-                locType: 0,
-                available: 1,
-                name: `${uuidv4()}`,
-                customer_id: 138230100010160,
-                communication: 1,
-                description: `Denne enhed tilhører ${currentUser.data.firstName}  ${currentUser.data.lastName}`,
-                metadata: {
-                  inbound: [],
-                  outbound: [],
-                  metadata: {}
-                }
-              };
-
-              // Create device
+            // Check if device is deleted
+            if (currentUser.data.aux.senti.deviceOwner != "") {
               servicesApi
-                .put(`databroker/v1/device`, device)
-                .then(createdDevice => {
-                  servicesApi
-                    .get(`databroker/v1/device/${createdDevice.data}`)
-                    .then(currentDevice => {
-                      // Assign device to user object
-                      currentUser.data.aux.senti.deviceOwner =
-                        currentDevice.data.uuid;
-
-                      // Update user with created device
-                      api
-                        .put(`/core/user/${res.data.userID}`, currentUser.data)
-                        .then(storeUserData(user));
-                    });
+                .get(
+                  `databroker/v1/device/${currentUser.data.aux.senti.deviceOwner}`
+                )
+                .then(currentDevice => {
+                  if (currentDevice.data == null) {
+                    registerDevice(currentUser, user);
+                  }
                 });
+            }
+
+            if (currentUser.data.aux.senti.deviceOwner === undefined) {
+              registerDevice(currentUser, user);
             } else {
-              storeUserData(user);
+              servicesApi
+                .get(
+                  `databroker/v1/device/${currentUser.data.aux.senti.deviceOwner}`
+                )
+                .then(userDevice => {
+                  storeUserData(user, userDevice);
+                });
             }
           });
         } else {
@@ -159,6 +167,31 @@ const Login = props => {
         }
       })
       .catch(() => setErrors({ ...errors, incorrectLogin: true }));
+  };
+
+  const storeUserData = async (userData, userDevice) => {
+    async () => {
+      await AsyncStorage.setItem(
+        "deviceUUID",
+        JSON.stringify(userDevice.data.uuid)
+      )();
+    };
+
+    getUserAvatar = `https://www.gravatar.com/avatar/${md5(
+      state.username.toLocaleLowerCase()
+    )}?s=200`;
+    try {
+      await AsyncStorage.multiSet(
+        [
+          ["userID", JSON.stringify(userData.userID)],
+          ["sessionID", JSON.stringify(userData.sessionID)],
+          ["userAvatar", getUserAvatar]
+        ],
+        () => props.isLoggedIn()
+      );
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   const closeDialog = () => {
