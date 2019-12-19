@@ -21,8 +21,10 @@ const guardsStatusArray = [];
 
 client.on("connect", function() {
   console.log("Connceted");
-  client.subscribe("userLocation", function(err) {});
-  client.subscribe("userStatus", function(err) {});
+  client.subscribe(
+    "v1/senti.flow-e2d2cc93/location/europe/registries/demo-register-9efe6cb6/devices/+/publish",
+    function(err) {}
+  );
 });
 
 const removeOfflineGuards = array => {
@@ -50,7 +52,7 @@ function Dashboard(props) {
   const classes = useStyles();
   const [guards] = useState(() => guardsArray);
   const [guardsStatus] = useState(() => guardsStatusArray);
-  const { loading, getUser, isAuthenticated, cookie } = props;
+  const { loading, getUser, cookie } = props;
 
   useEffect(() => {
     getUser();
@@ -64,7 +66,7 @@ function Dashboard(props) {
     setInterval(() => removeOfflineGuards(guardsArray), 10000);
     client.addListener("message", (topic, data) => {
       let guardData = JSON.parse(data);
-      if (topic === "userLocation") {
+      if (guardData.type === "userLocation") {
         const guard = {
           id: guardData.userID,
           online: true,
@@ -82,7 +84,7 @@ function Dashboard(props) {
           guardsArray[guardIndex].guardLocation = guard.guardLocation;
         }
         console.log(guards);
-      } else if (topic === "userStatus") {
+      } else if (guardData.type === "userStatus") {
         const guardStatus = {
           id: guardData.userID,
           userStatus: guardData.userStatus,
@@ -131,8 +133,7 @@ function Dashboard(props) {
 const mapStateToProps = state => ({
   auth: state.auth,
   user: state.auth.user,
-  loading: state.auth.loading,
-  isAuthenticated: state.auth.isAuthenticated
+  loading: state.auth.loading
 });
 
 // Dashboard.whyDidYouRender = true;

@@ -150,6 +150,7 @@ const Login = props => {
                 });
             }
 
+            // Check if user dosen't have any device
             if (currentUser.data.aux.senti.deviceOwner === undefined) {
               registerDevice(currentUser, user);
             } else {
@@ -157,8 +158,14 @@ const Login = props => {
                 .get(
                   `databroker/v1/device/${currentUser.data.aux.senti.deviceOwner}`
                 )
-                .then(userDevice => {
-                  storeUserData(user, userDevice);
+                .then(async userDevice => {
+                  let pushToken = await AsyncStorage.getItem("pushToken");
+                  currentUser.data.aux.senti.pushToken = pushToken;
+                  api
+                    .put(`/core/user/${user.userID}`, currentUser.data)
+                    .then(() => {
+                      storeUserData(user, userDevice);
+                    });
                 });
             }
           });
@@ -170,13 +177,7 @@ const Login = props => {
   };
 
   const storeUserData = async (userData, userDevice) => {
-    async () => {
-      await AsyncStorage.setItem(
-        "deviceUUID",
-        JSON.stringify(userDevice.data.uuid)
-      )();
-    };
-
+    await AsyncStorage.setItem("deviceUUID", userDevice.data.uuid.toString());
     getUserAvatar = `https://www.gravatar.com/avatar/${md5(
       state.username.toLocaleLowerCase()
     )}?s=200`;
