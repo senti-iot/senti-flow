@@ -24,6 +24,20 @@ client.on("connect", function() {
   );
 });
 
+const removeOfflineGuards = array => {
+  array.filter(guard => {
+    let currentTime = new Date();
+    let guardTimeStamp = new Date(guard.timestamp);
+    let old = currentTime - guardTimeStamp > 10000;
+    let guardIndex = array.findIndex(oneGuard => oneGuard.id === guard.id);
+    if (old) {
+      if (guardIndex > -1) {
+        array.splice(guardIndex, 1);
+      }
+    }
+    return array;
+  });
+};
 const useStyles = makeStyles(theme => ({
   container: {
     height: "93vh"
@@ -33,7 +47,7 @@ const useStyles = makeStyles(theme => ({
 function Dashboard(props) {
   const classes = useStyles();
   const [guards, setGuards] = useState([]);
-  // const [guardsStatus, setGuardsStatus] = useState([]);
+  const [guardsStatus, setGuardsStatus] = useState([]);
   const { loading, getUser, cookie } = props;
 
   const handleMQTTMessage = data => {
@@ -54,7 +68,31 @@ function Dashboard(props) {
         setGuards([...guards, guard]);
       } else {
         // Guard exists with this index
+        let newGuards = [...guards];
         let guardIndex = guards.findIndex(oneGuard => oneGuard.id === guard.id);
+        newGuards[guardIndex].timestamp = guard.timestamp;
+        newGuards[guardIndex].guardLocation = guard.guardLocation;
+        setGuards(newGuards);
+      }
+    } else if (guardData.type === "userStatus") {
+      let status = {
+        id: guardData.userID,
+        userStatus: guardData.userStatus,
+        timestamp: guardData.timestamp
+      };
+
+      if (
+        !guardsStatus.some(oneGuardStatus => oneGuardStatus.id === status.id)
+      ) {
+        setGuardsStatus([...guardsStatus, status]);
+      } else {
+        let newGuardsStatus = [...guardsStatus];
+        let guardStatusIndex = guardsStatus.findIndex(
+          oneGuard => oneGuard.id === status.id
+        );
+        newGuardsStatus[guardStatusIndex].userStatus = status.userStatus;
+        newGuardsStatus[guardStatusIndex].timestamp = status.timestamp;
+        setGuardsStatus(newGuardsStatus);
       }
     }
     client.removeAllListeners();
@@ -62,6 +100,8 @@ function Dashboard(props) {
 
   useEffect(() => {
     if (!loading) {
+      setInterval(() => removeOfflineGuards(guards), 10000);
+
       client.on("message", (topic, data) => {
         handleMQTTMessage(data);
       });
@@ -72,7 +112,7 @@ function Dashboard(props) {
     getUser();
   }, [getUser]);
 
-  console.log(guards);
+  // console.log(guards);
   // console.log(guardsStatus);
 
   if (typeof cookie === "undefined") {
