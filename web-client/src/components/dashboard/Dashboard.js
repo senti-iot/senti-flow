@@ -16,9 +16,6 @@ var client = mqtt.connect({
   client: "myclientid_" + parseInt(Math.random() * 100, 10)
 });
 
-const guardsArray = [];
-const guardsStatusArray = [];
-
 client.on("connect", function() {
   console.log("Connceted");
   client.subscribe(
@@ -26,21 +23,6 @@ client.on("connect", function() {
     function(err) {}
   );
 });
-
-const removeOfflineGuards = array => {
-  array.filter(guard => {
-    let currentTime = new Date();
-    let guardTimeStamp = new Date(guard.timestamp);
-    let old = currentTime - guardTimeStamp > 10000;
-    let guardIndex = array.findIndex(oneGuard => oneGuard.id === guard.id);
-    if (old) {
-      if (guardIndex > -1) {
-        array.splice(guardIndex, 1);
-      }
-    }
-    return array;
-  });
-};
 
 const useStyles = makeStyles(theme => ({
   container: {
@@ -50,62 +32,51 @@ const useStyles = makeStyles(theme => ({
 
 function Dashboard(props) {
   const classes = useStyles();
-  const [guards] = useState(() => guardsArray);
-  const [guardsStatus] = useState(() => guardsStatusArray);
+  const [guards, setGuards] = useState([]);
+  // const [guardsStatus, setGuardsStatus] = useState([]);
   const { loading, getUser, cookie } = props;
+
+  const handleMQTTMessage = data => {
+    let guardData = JSON.parse(data);
+    let guard = {};
+    console.log("Got Data!");
+    // If data is guard location
+    if (guardData.type === "userLocation") {
+      guard = {
+        id: guardData.userID,
+        online: true,
+        timestamp: guardData.location[0].timestamp,
+        guardLocation: guardData.location[0].coords
+      };
+
+      // Check if guard already exists
+      if (!guards.some(oneGuard => oneGuard.id === guard.id)) {
+        setGuards([...guards, guard]);
+      } else {
+        // Guard exists with this index
+        let guardIndex = guards.findIndex(oneGuard => oneGuard.id === guard.id);
+      }
+    }
+    client.removeAllListeners();
+  };
+
+  useEffect(() => {
+    if (!loading) {
+      client.on("message", (topic, data) => {
+        handleMQTTMessage(data);
+      });
+    }
+  });
 
   useEffect(() => {
     getUser();
   }, [getUser]);
 
+  console.log(guards);
+  // console.log(guardsStatus);
+
   if (typeof cookie === "undefined") {
     return <Redirect to="/login" />;
-  }
-
-  if (!loading) {
-    setInterval(() => removeOfflineGuards(guardsArray), 10000);
-    client.addListener("message", (topic, data) => {
-      let guardData = JSON.parse(data);
-      if (guardData.type === "userLocation") {
-        const guard = {
-          id: guardData.userID,
-          online: true,
-          timestamp: guardData.location[0].timestamp,
-          guardLocation: guardData.location[0].coords
-        };
-
-        if (!guardsArray.some(oneGuard => oneGuard.id === guard.id)) {
-          guardsArray.push(guard);
-        } else {
-          var guardIndex = guardsArray.findIndex(
-            oneGuard => oneGuard.id === guard.id
-          );
-          guardsArray[guardIndex].timestamp = guardData.location[0].timestamp;
-          guardsArray[guardIndex].guardLocation = guard.guardLocation;
-        }
-        console.log(guards);
-      } else if (guardData.type === "userStatus") {
-        const guardStatus = {
-          id: guardData.userID,
-          userStatus: guardData.userStatus,
-          timestamp: guardData.timestamp
-        };
-        if (
-          !guardsStatusArray.some(
-            oneGuardStatus => oneGuardStatus.id === guardStatus.id
-          )
-        ) {
-          guardsStatusArray.push(guardStatus);
-        } else {
-          var guardStatusIndex = guardsStatusArray.findIndex(
-            oneGuardStatus => oneGuardStatus.id === guardStatus.id
-          );
-          guardsStatusArray[guardStatusIndex].userStatus = guardData.userStatus;
-          guardsStatusArray[guardStatusIndex].timestamp = guardData.timestamp;
-        }
-        console.log(guardsStatus);
-      }
-    });
   }
 
   let dashboardContent;
