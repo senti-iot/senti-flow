@@ -1,7 +1,7 @@
 import Grid from "@material-ui/core/Grid";
 import { makeStyles } from "@material-ui/core/styles";
 import React from "react";
-import { Map, TileLayer } from "react-leaflet";
+import { Map, Marker, TileLayer } from "react-leaflet";
 import MessageBox from "./MessageBox";
 
 const useStyles = makeStyles(theme => ({
@@ -11,8 +11,9 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-export default function MapView() {
+export default function MapView({ guards }) {
   const classes = useStyles();
+
   return (
     <Grid className={classes.mapStyle} xs={7} item={true}>
       <Map
@@ -25,6 +26,15 @@ export default function MapView() {
           attribution='&amp;copy <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
+        {guards.map(guard => (
+          <Marker
+            key={guard.id}
+            position={[
+              guard.guardLocation.latitude,
+              guard.guardLocation.longitude
+            ]}
+          />
+        ))}
       </Map>
       <MessageBox />
     </Grid>

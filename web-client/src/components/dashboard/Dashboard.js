@@ -131,7 +131,7 @@ function Dashboard(props) {
       <>
         <Header />
         <Grid className={classes.container} container>
-          <MapView />
+          <MapView guards={guards} />
           <Filter />
           <StatusContainer />
         </Grid>
