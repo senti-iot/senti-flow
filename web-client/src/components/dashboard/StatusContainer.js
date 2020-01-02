@@ -4,6 +4,40 @@ import Grid from "@material-ui/core/Grid";
 import { makeStyles } from "@material-ui/core/styles";
 import AppBar from "@material-ui/core/AppBar";
 import Typography from "@material-ui/core/Typography";
+import moment from "moment";
+
+const defaultStatus = [
+  {
+    key: "altOk",
+    statusColor: "#6dd400",
+    text: "Alt Ok",
+    textColor: "#FFFFFF"
+  },
+  {
+    key: "staaStille",
+    statusColor: "#ffd200",
+    text: "Stå stille",
+    textColor: "#000000"
+  },
+  {
+    key: "traeghed",
+    statusColor: "#ffd200",
+    text: "Træghed",
+    textColor: "#000000"
+  },
+  {
+    key: "samarit",
+    statusColor: "#e01f20",
+    text: "Brug for samarit",
+    textColor: "#FFFFFF"
+  },
+  {
+    key: "politi",
+    statusColor: "#e01f20",
+    text: "Politi",
+    textColor: "#FFFFFF"
+  }
+];
 
 const useStyles = makeStyles(theme => ({
   headerStyle: {
@@ -23,7 +57,7 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-export default function StatusContainer() {
+export default function StatusContainer({ guards }) {
   const classes = useStyles();
 
   return (
@@ -34,7 +68,42 @@ export default function StatusContainer() {
         </Typography>
       </AppBar>
       <div className={classes.statusContentStyle}>
-        <Status />
+        {guards.map(oneGuard => {
+          if (oneGuard.guardStatus) {
+            return (
+              <Status
+                key={oneGuard.id}
+                textColor={
+                  defaultStatus[
+                    defaultStatus.findIndex(
+                      s => s.key === oneGuard.guardStatus.userStatus
+                    )
+                  ].textColor
+                }
+                statusColor={
+                  defaultStatus[
+                    defaultStatus.findIndex(
+                      s => s.key === oneGuard.guardStatus.userStatus
+                    )
+                  ].statusColor
+                }
+                guardImage={oneGuard.userAvatar}
+                name={oneGuard.userFullName}
+                status={
+                  defaultStatus[
+                    defaultStatus.findIndex(
+                      s => s.key === oneGuard.guardStatus.userStatus
+                    )
+                  ].text
+                }
+                // Need to implemente speed, not done yet! default is 5 just for test
+                speed={5}
+                time={moment(oneGuard.guardStatus.timestamp).format("H:mm:ss")}
+              />
+            );
+          }
+          return null;
+        })}
       </div>
     </Grid>
   );

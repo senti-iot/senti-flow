@@ -80,6 +80,7 @@ export default function App(props) {
     await AsyncStorage.removeItem("userID");
     await AsyncStorage.removeItem("sessionID");
     await AsyncStorage.removeItem("userAvatar");
+    await AsyncStorage.removeItem("userFullName");
     await AsyncStorage.removeItem("deviceUUID");
     setLoading(true);
     setAuthorized(false);
@@ -147,7 +148,9 @@ TaskManager.defineTask(LOCATION_TASK_NAME, async ({ data, error }) => {
   locations = {
     type: "userLocation",
     location: { ...locations },
-    userID: await AsyncStorage.getItem("userID")
+    userID: await AsyncStorage.getItem("userID"),
+    userFullName: await AsyncStorage.getItem("userFullName"),
+    userAvatar: await AsyncStorage.getItem("userAvatar")
   };
   mqttActions.sendData(JSON.stringify(locations));
 });

@@ -136,7 +136,13 @@ const Login = props => {
           api.setHeader("ODEUMAuthToken", res.data.sessionID);
 
           // Get user and check if user has device already
-          api.get(`/core/user/${res.data.userID}`).then(currentUser => {
+          api.get(`/core/user/${res.data.userID}`).then(async currentUser => {
+            // Set user fullname to localstorage
+            await AsyncStorage.setItem(
+              "userFullName",
+              currentUser.data.firstName + " " + currentUser.data.lastName
+            );
+
             // Check if device is deleted
             if (currentUser.data.aux.senti.deviceOwner != "") {
               servicesApi
@@ -180,7 +186,7 @@ const Login = props => {
     await AsyncStorage.setItem("deviceUUID", userDevice.data.uuid.toString());
     getUserAvatar = `https://www.gravatar.com/avatar/${md5(
       state.username.toLocaleLowerCase()
-    )}?s=200`;
+    )}?s=400`;
     try {
       await AsyncStorage.multiSet(
         [

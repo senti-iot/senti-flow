@@ -47,20 +47,22 @@ const useStyles = makeStyles(theme => ({
 function Dashboard(props) {
   const classes = useStyles();
   const [guards, setGuards] = useState([]);
-  const [guardsStatus, setGuardsStatus] = useState([]);
   const { loading, getUser, cookie } = props;
 
   const handleMQTTMessage = data => {
     let guardData = JSON.parse(data);
     let guard = {};
     console.log("Got Data!");
+
     // If data is guard location
     if (guardData.type === "userLocation") {
       guard = {
         id: guardData.userID,
         online: true,
         timestamp: guardData.location[0].timestamp,
-        guardLocation: guardData.location[0].coords
+        guardLocation: guardData.location[0].coords,
+        userAvatar: guardData.userAvatar,
+        userFullName: guardData.userFullName
       };
 
       // Check if guard already exists
@@ -81,19 +83,18 @@ function Dashboard(props) {
         timestamp: guardData.timestamp
       };
 
-      if (
-        !guardsStatus.some(oneGuardStatus => oneGuardStatus.id === status.id)
-      ) {
-        setGuardsStatus([...guardsStatus, status]);
-      } else {
-        let newGuardsStatus = [...guardsStatus];
-        let guardStatusIndex = guardsStatus.findIndex(
-          oneGuard => oneGuard.id === status.id
-        );
-        newGuardsStatus[guardStatusIndex].userStatus = status.userStatus;
-        newGuardsStatus[guardStatusIndex].timestamp = status.timestamp;
-        setGuardsStatus(newGuardsStatus);
-      }
+      // Append status to guard
+      let newGuards = [...guards];
+      let guardIndex = guards.findIndex(oneGuard => oneGuard.id === status.id);
+      let newGuard;
+      newGuard = newGuards[guardIndex] = {
+        ...newGuards[guardIndex],
+        guardStatus: status
+      };
+      newGuards.splice(guardIndex, 1);
+      newGuards.unshift(newGuard);
+
+      setGuards(newGuards);
     }
     client.removeAllListeners();
   };
@@ -133,7 +134,7 @@ function Dashboard(props) {
         <Grid className={classes.container} container>
           <MapView guards={guards} />
           <Filter />
-          <StatusContainer />
+          <StatusContainer guards={guards} />
         </Grid>
       </>
     );

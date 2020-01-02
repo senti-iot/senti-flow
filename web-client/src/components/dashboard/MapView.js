@@ -5,13 +5,48 @@ import { Map, Marker, TileLayer, Popup } from "react-leaflet";
 import MessageBox from "./MessageBox";
 import L from "leaflet";
 
+const defaultStatus = [
+  {
+    key: "altOk",
+    class: "green"
+  },
+  {
+    key: "staaStille",
+    class: "yellow"
+  },
+  {
+    key: "traeghed",
+    class: "yellow"
+  },
+  {
+    key: "samarit",
+    class: "red"
+  },
+  {
+    key: "politi",
+    class: "red"
+  }
+];
+
 const useStyles = makeStyles(theme => ({
   mapStyle: {
     height: "80vh",
     zIndex: "1"
   },
-  divIcon: {
-    border: "5px solid green",
+  default: {
+    border: "5px solid gray",
+    borderRadius: 50
+  },
+  green: {
+    border: "5px solid #6dd400",
+    borderRadius: 50
+  },
+  red: {
+    border: "5px solid #e01f20",
+    borderRadius: 50
+  },
+  yellow: {
+    border: "5px solid #ffd200",
     borderRadius: 50
   }
 }));
@@ -19,12 +54,7 @@ const useStyles = makeStyles(theme => ({
 export default function MapView({ guards }) {
   const classes = useStyles();
 
-  var myIcon = L.icon({
-    className: classes.divIcon,
-    iconUrl: "https://starbyface.com/ImgBase/testPhoto/test1.jpg",
-    iconRetinaUrl: "https://starbyface.com/ImgBase/testPhoto/test1.jpg",
-    iconSize: [30, 30]
-  });
+  let myIconClass = "default";
 
   return (
     <Grid className={classes.mapStyle} xs={7} item={true}>
@@ -38,20 +68,43 @@ export default function MapView({ guards }) {
           attribution='&amp;copy <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
-        {guards.map(guard => (
-          <Marker
-            key={guard.id}
-            position={[
-              guard.guardLocation.latitude,
-              guard.guardLocation.longitude
-            ]}
-            icon={myIcon}
-          >
-            <Popup>
-              <span>Guard Name</span>
-            </Popup>
-          </Marker>
-        ))}
+        {guards.map(guard => {
+          var myIcon = L.icon({
+            className: classes.default,
+            iconUrl: guard.userAvatar,
+            iconSize: [30, 30]
+          });
+
+          if (guard.guardStatus && guard.id === guard.guardStatus.id) {
+            myIconClass =
+              defaultStatus[
+                defaultStatus.findIndex(
+                  s => s.key === guard.guardStatus.userStatus
+                )
+              ].class;
+
+            myIcon = L.icon({
+              className: classes[myIconClass],
+              iconUrl: guard.userAvatar,
+              iconSize: [30, 30]
+            });
+          }
+
+          return (
+            <Marker
+              key={guard.id}
+              position={[
+                guard.guardLocation.latitude,
+                guard.guardLocation.longitude
+              ]}
+              icon={myIcon}
+            >
+              <Popup>
+                <span>{guard.userFullName}</span>
+              </Popup>
+            </Marker>
+          );
+        })}
       </Map>
       <MessageBox />
     </Grid>

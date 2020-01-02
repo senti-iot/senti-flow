@@ -4,12 +4,11 @@ import Grid from "@material-ui/core/Grid";
 import Card from "@material-ui/core/Card";
 import CardContent from "@material-ui/core/CardContent";
 import Typography from "@material-ui/core/Typography";
-import ProfileImage from "../../assets/images/profile.png";
 
 const useStyles = makeStyles(theme => ({
   statusStyle: {
     margin: "5px 2px",
-    background: "#6dd400",
+    background: "#bdc3c7",
     height: "100px",
     color: "#fff"
   },
@@ -36,29 +35,40 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-export default function Status() {
+export default function Status({
+  name,
+  speed,
+  time,
+  guardImage,
+  status,
+  statusColor,
+  textColor
+}) {
   const classes = useStyles();
 
   return (
-    <Card className={classes.statusStyle}>
+    <Card
+      className={classes.statusStyle}
+      style={{ background: statusColor, color: textColor }}
+    >
       <CardContent>
         <Grid container>
           <Grid className={classes.profileImageWrapper} item={true} xs={2}>
             <img
               className={classes.profileImageStyle}
-              src={ProfileImage}
+              src={guardImage}
               alt="Profile"
             />
           </Grid>
           <Grid className={classes.detailsBoxStyle} item={true} xs={8}>
-            <Typography className={classes.vehicleNumber}>Vogn 12</Typography>
+            <Typography className={classes.vehicleNumber}>{name}</Typography>
             <Typography className={classes.vehicleDetails}>
-              Fart: 5 km/t
+              Fart: {speed} km/t
             </Typography>
-            <Typography className={classes.vehicleDetails}>Alt ok</Typography>
+            <Typography className={classes.vehicleDetails}>{status}</Typography>
           </Grid>
           <Grid item={true} xs={2}>
-            <Typography className={classes.vehicleDetails}>10:46:10</Typography>
+            <Typography className={classes.vehicleDetails}>{time}</Typography>
           </Grid>
         </Grid>
       </CardContent>
