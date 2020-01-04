@@ -1,6 +1,6 @@
 import { Notifications } from "expo";
 import * as Permissions from "expo-permissions";
-import { AsyncStorage } from "react-native";
+import { AsyncStorage, Platform } from "react-native";
 
 export default async function registerForPushNotificationsAsync() {
   const { status: existingStatus } = await Permissions.getAsync(
@@ -22,24 +22,16 @@ export default async function registerForPushNotificationsAsync() {
     return;
   }
 
+  if (Platform.OS === "android") {
+    Notifications.createChannelAndroidAsync("senti-flow-messages", {
+      name: "Senti Flow Messages",
+      priority: "max",
+      sound: true,
+      vibrate: true
+    });
+  }
+
   // Get the token that uniquely identifies this device
   let token = await Notifications.getExpoPushTokenAsync();
   await AsyncStorage.setItem("pushToken", token);
-
-  // POST the token to your backend server from where you can retrieve it to send push notifications.
-  // return fetch(PUSH_ENDPOINT, {
-  //   method: "POST",
-  //   headers: {
-  //     Accept: "application/json",
-  //     "Content-Type": "application/json"
-  //   },
-  //   body: JSON.stringify({
-  //     token: {
-  //       value: token
-  //     },
-  //     user: {
-  //       username: "Brent"
-  //     }
-  //   })
-  // });
 }

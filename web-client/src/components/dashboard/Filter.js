@@ -30,8 +30,34 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-export default function Filter(props) {
+export default function Filter({
+  guards,
+  setGuards,
+  guardsToken,
+  setGuardsToken,
+  setView
+}) {
   const classes = useStyles();
+  const handleChcked = guard => {
+    let newGuards = [...guards];
+    let guardIndex = guards.findIndex(oneGuard => oneGuard.id === guard.id);
+    newGuards[guardIndex].checked = !guard.checked;
+    if (newGuards[guardIndex].checked) {
+      setGuardsToken([...guardsToken, guard.pushToken]);
+      if (guardsToken.length === 0) {
+        setView([guard.guardLocation.latitude, guard.guardLocation.longitude]);
+      }
+    } else {
+      let newGuardsToken = [...guardsToken];
+      let guardTokenIndex = newGuardsToken.findIndex(
+        oneToken => oneToken === newGuards[guardIndex].token
+      );
+      newGuardsToken.splice(guardTokenIndex, 1);
+      setGuardsToken(newGuardsToken);
+      setView([]);
+    }
+    setGuards(newGuards);
+  };
 
   return (
     <Grid item={true} className={classes.filterStyle} xs={2}>
@@ -42,10 +68,10 @@ export default function Filter(props) {
       </AppBar>
 
       <div className={classes.filterContentStyle}>
-        <FormControlLabel
+        {/* <FormControlLabel
           control={
             <Checkbox
-              value="checkedB"
+              value="all"
               color="primary"
               labelstyle={{ color: "#16125f" }}
               iconstyle={{ fill: "#16125f" }}
@@ -57,24 +83,31 @@ export default function Filter(props) {
             />
           }
           label="Alle"
-        />
+        /> */}
 
-        <FormControlLabel
-          control={
-            <Checkbox
-              value="checkedB"
-              color="primary"
-              labelstyle={{ color: "#16125f" }}
-              iconstyle={{ fill: "#16125f" }}
-              inputstyle={{ color: "#16125f" }}
-              style={{ color: "#16125f" }}
-              inputProps={{
-                "aria-label": "secondary checkbox"
-              }}
+        {guards.map(oneGuard => {
+          return (
+            <FormControlLabel
+              key={oneGuard.id}
+              control={
+                <Checkbox
+                  checked={oneGuard.checked}
+                  value={oneGuard.id}
+                  color="primary"
+                  onChange={() => handleChcked(oneGuard)}
+                  labelstyle={{ color: "#16125f" }}
+                  iconstyle={{ fill: "#16125f" }}
+                  inputstyle={{ color: "#16125f" }}
+                  style={{ color: "#16125f" }}
+                  inputProps={{
+                    "aria-label": "secondary checkbox"
+                  }}
+                />
+              }
+              label={oneGuard.userFullName}
             />
-          }
-          label="Vogn 12"
-        />
+          );
+        })}
       </div>
     </Grid>
   );

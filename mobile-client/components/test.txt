@@ -1,4 +1,0 @@
-accuracy: Location.Accuracy.BestForNavigation,
-distanceInterval: 4,
-activityType: Location.ActivityType.Fitness, 
-mayShowUserSettingsDialog: false

@@ -1,8 +1,10 @@
-import React from "react";
+import React, { useState } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import TextareaAutosize from "@material-ui/core/TextareaAutosize";
 import Grid from "@material-ui/core/Grid";
 import Button from "@material-ui/core/Button";
+import "react-toastify/dist/ReactToastify.css";
+import { create } from "apisauce";
 
 const useStyles = makeStyles(theme => ({
   messageBoxStyle: {
@@ -42,8 +44,40 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-export default function MessageBox() {
+export default function MessageBox({ guardsToken, notify }) {
   const classes = useStyles();
+  const [message, setMessage] = useState({ value: "" });
+
+  const sendToPushServer = async (message, guardsToken) => {
+    if (message.value === "") {
+      notify("⚠️ Please type a message first", "error");
+    } else if (guardsToken.length < 1) {
+      notify("⚠️ Please select at least one recipient", "error");
+    } else {
+      const api = create({
+        baseURL: "http://localhost:3001/",
+        timeout: 30000,
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json"
+        }
+      });
+
+      let data = {
+        message: message.value,
+        tokens: guardsToken
+      };
+
+      await api
+        .post(`send`, data)
+        .then(res => {
+          setMessage({ value: "" });
+          notify("👍 Push notifications sent", "success");
+        })
+        .catch(error => console.log(error));
+    }
+  };
+
   return (
     <Grid className={classes.messageBoxStyle} container>
       <Grid item={true} xs={9}>
@@ -51,6 +85,8 @@ export default function MessageBox() {
           rowsMax={3}
           rows={3}
           className={classes.messageFieldStyle}
+          value={message.value}
+          onChange={e => setMessage({ value: e.target.value })}
         />
       </Grid>
       <Grid item={true} xs={3}>
@@ -59,6 +95,9 @@ export default function MessageBox() {
           fullWidth
           color={"secondary"}
           className={(classes.button, classes.sendButton)}
+          onClick={() => {
+            sendToPushServer(message, guardsToken);
+          }}
         >
           Send
         </Button>

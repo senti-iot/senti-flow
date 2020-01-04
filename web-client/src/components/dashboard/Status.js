@@ -63,7 +63,7 @@ export default function Status({
           <Grid className={classes.detailsBoxStyle} item={true} xs={8}>
             <Typography className={classes.vehicleNumber}>{name}</Typography>
             <Typography className={classes.vehicleDetails}>
-              Fart: {speed} km/t
+              Fart: {speed} meter i min
             </Typography>
             <Typography className={classes.vehicleDetails}>{status}</Typography>
           </Grid>

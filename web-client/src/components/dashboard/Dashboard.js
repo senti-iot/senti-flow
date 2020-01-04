@@ -1,6 +1,6 @@
 import Grid from "@material-ui/core/Grid";
 import { makeStyles } from "@material-ui/core/styles";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { connect } from "react-redux";
 import { Redirect } from "react-router";
 import { getUser } from "../../redux/action/authActions";
@@ -10,6 +10,7 @@ import Filter from "./Filter";
 import MapView from "./MapView";
 import StatusContainer from "./StatusContainer";
 import mqtt from "mqtt";
+import moment from "moment";
 var client = mqtt.connect({
   host: "hive.senti.cloud",
   port: 8083,
@@ -24,20 +25,26 @@ client.on("connect", function() {
   );
 });
 
-const removeOfflineGuards = array => {
-  array.filter(guard => {
-    let currentTime = new Date();
-    let guardTimeStamp = new Date(guard.timestamp);
-    let old = currentTime - guardTimeStamp > 10000;
-    let guardIndex = array.findIndex(oneGuard => oneGuard.id === guard.id);
-    if (old) {
-      if (guardIndex > -1) {
-        array.splice(guardIndex, 1);
-      }
+function useInterval(callback, delay) {
+  const savedCallback = useRef();
+
+  // Remember the latest callback.
+  useEffect(() => {
+    savedCallback.current = callback;
+  }, [callback]);
+
+  // Set up the interval.
+  useEffect(() => {
+    function tick() {
+      savedCallback.current();
     }
-    return array;
-  });
-};
+    if (delay !== null) {
+      let id = setInterval(tick, delay);
+      return () => clearInterval(id);
+    }
+  }, [delay]);
+}
+
 const useStyles = makeStyles(theme => ({
   container: {
     height: "93vh"
@@ -47,13 +54,34 @@ const useStyles = makeStyles(theme => ({
 function Dashboard(props) {
   const classes = useStyles();
   const [guards, setGuards] = useState([]);
-  const { loading, getUser, cookie } = props;
+  const [guardsToken, setGuardsToken] = useState([]);
+  const [zoomedGuard, setZoomedGuard] = useState([]);
+  const { loading, getUser, cookie, notify, user } = props;
+
+  useInterval(() => {
+    if (guards.length > 0) {
+      let newGuardsArray = [...guards];
+
+      newGuardsArray.map(guard => {
+        let diff = moment(Date.now()).diff(moment(guard.timestamp), "seconds");
+
+        let guardIndex = newGuardsArray.findIndex(
+          oneGuard => oneGuard.id === guard.id
+        );
+
+        if (diff > 15) {
+          newGuardsArray.splice(guardIndex, 1);
+          setGuards(newGuardsArray);
+          return true;
+        }
+        return false;
+      });
+    }
+  }, 5000);
 
   const handleMQTTMessage = data => {
     let guardData = JSON.parse(data);
     let guard = {};
-    console.log("Got Data!");
-
     // If data is guard location
     if (guardData.type === "userLocation") {
       guard = {
@@ -62,7 +90,10 @@ function Dashboard(props) {
         timestamp: guardData.location[0].timestamp,
         guardLocation: guardData.location[0].coords,
         userAvatar: guardData.userAvatar,
-        userFullName: guardData.userFullName
+        userFullName: guardData.userFullName,
+        pushToken: guardData.pushToken,
+        speed: guardData.location[0].coords.speed * 60,
+        checked: false
       };
 
       // Check if guard already exists
@@ -91,19 +122,48 @@ function Dashboard(props) {
         ...newGuards[guardIndex],
         guardStatus: status
       };
-      newGuards.splice(guardIndex, 1);
-      newGuards.unshift(newGuard);
-
+      if (guards.length > 1) {
+        newGuards.splice(guardIndex, 1);
+        newGuards.unshift(newGuard);
+      }
       setGuards(newGuards);
     }
-    client.removeAllListeners();
   };
 
   useEffect(() => {
-    if (!loading) {
-      setInterval(() => removeOfflineGuards(guards), 10000);
+    if (localStorage.getItem("guards")) {
+      setGuards(JSON.parse(localStorage.getItem("guards")));
+    }
+    if (localStorage.getItem("zoomedGuard")) {
+      setZoomedGuard(JSON.parse(localStorage.getItem("zoomedGuard")));
+    }
+    if (localStorage.getItem("guardsToken")) {
+      setGuardsToken(JSON.parse(localStorage.getItem("guardsToken")));
+    }
+  }, []);
 
+  useEffect(() => {
+    if (guards.length >= 1) {
+      localStorage.setItem("guards", JSON.stringify(guards));
+    }
+  }, [guards]);
+
+  useEffect(() => {
+    if (zoomedGuard.length >= 0) {
+      localStorage.setItem("zoomedGuard", JSON.stringify(zoomedGuard));
+    }
+  }, [zoomedGuard]);
+
+  useEffect(() => {
+    if (guardsToken.length >= 0) {
+      localStorage.setItem("guardsToken", JSON.stringify(guardsToken));
+    }
+  }, [guardsToken]);
+
+  useEffect(() => {
+    if (!loading) {
       client.on("message", (topic, data) => {
+        client.removeAllListeners();
         handleMQTTMessage(data);
       });
     }
@@ -113,27 +173,35 @@ function Dashboard(props) {
     getUser();
   }, [getUser]);
 
-  // console.log(guards);
-  // console.log(guardsStatus);
-
   if (typeof cookie === "undefined") {
     return <Redirect to="/login" />;
   }
 
   let dashboardContent;
-  if (props.loading) {
+  if (loading) {
     dashboardContent = (
       <>
         <Spinner />
       </>
     );
-  } else if (props.user) {
+  } else if (user) {
     dashboardContent = (
       <>
         <Header />
         <Grid className={classes.container} container>
-          <MapView guards={guards} />
-          <Filter />
+          <MapView
+            notify={(text, type) => notify(text, type)}
+            guardsToken={guardsToken}
+            guards={guards}
+            zoomedGuard={zoomedGuard}
+          />
+          <Filter
+            setGuardsToken={guardsToken => setGuardsToken(guardsToken)}
+            guardsToken={guardsToken}
+            setGuards={selectedGuardsArray => setGuards(selectedGuardsArray)}
+            guards={guards}
+            setView={cords => setZoomedGuard(cords)}
+          />
           <StatusContainer guards={guards} />
         </Grid>
       </>

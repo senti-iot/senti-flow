@@ -31,6 +31,7 @@ export const makeConnection = () => {
     8083,
     "myclientid_" + parseInt(Math.random() * 100, 10)
   );
+
   // set callback handlers
   client.onConnectionLost = onConnectionLost;
 

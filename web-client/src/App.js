@@ -3,6 +3,8 @@ import cookie from "react-cookies";
 import { connect } from "react-redux";
 import { BrowserRouter, Route, Switch } from "react-router-dom";
 import "./App.css";
+import { ToastContainer, toast } from "react-toastify";
+import { makeStyles } from "@material-ui/core/styles";
 import Dashboard from "./components/dashboard/Dashboard";
 import Login from "./components/login/Login";
 import {
@@ -10,11 +12,24 @@ import {
   setUser,
   validateSession
 } from "./redux/action/authActions";
-const whyDidYouRender = require("@welldone-software/why-did-you-render");
-whyDidYouRender(React);
+
+const useStyles = makeStyles(theme => ({
+  toastStyle: {
+    paddingLeft: 20,
+    textAlign: "left"
+  }
+}));
 
 function App(props) {
   const { logoutUser, setUser } = props;
+  const classes = useStyles();
+
+  const notify = (text, type) => {
+    toast[type](text, {
+      position: toast.POSITION.BOTTOM_RIGHT,
+      bodyClassName: classes.toastStyle
+    });
+  };
 
   useEffect(() => {
     if (!cookie.load("SESSION")) {
@@ -33,9 +48,13 @@ function App(props) {
             <Login />
           </Route>
           <Route path="/dashboard">
-            <Dashboard cookie={cookie.load("SESSION")} />
+            <Dashboard
+              notify={(text, type) => notify(text, type)}
+              cookie={cookie.load("SESSION")}
+            />
           </Route>
         </Switch>
+        <ToastContainer style={{ width: 400 }} />
       </div>
     </BrowserRouter>
   );

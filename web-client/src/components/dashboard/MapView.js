@@ -51,18 +51,21 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-export default function MapView({ guards }) {
+export default function MapView({ guards, guardsToken, notify, zoomedGuard }) {
   const classes = useStyles();
-
   let myIconClass = "default";
-
+  let length = guardsToken.length;
   return (
     <Grid className={classes.mapStyle} xs={7} item={true}>
       <Map
         maxZoom={19}
-        center={["57.046662", "9.919612"]}
+        center={
+          zoomedGuard.length === 2 && length === 1
+            ? zoomedGuard
+            : ["57.046662", "9.919612"]
+        }
         style={{ height: "100%" }}
-        zoom={13}
+        zoom={zoomedGuard.length === 2 && length === 1 ? 20 : 13}
       >
         <TileLayer
           attribution='&amp;copy <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
@@ -90,23 +93,50 @@ export default function MapView({ guards }) {
             });
           }
 
-          return (
-            <Marker
-              key={guard.id}
-              position={[
-                guard.guardLocation.latitude,
-                guard.guardLocation.longitude
-              ]}
-              icon={myIcon}
-            >
-              <Popup>
-                <span>{guard.userFullName}</span>
-              </Popup>
-            </Marker>
-          );
+          if (guardsToken.length > 0) {
+            if (guard.checked) {
+              return (
+                <Marker
+                  key={guard.id}
+                  position={[
+                    guard.guardLocation.latitude,
+                    guard.guardLocation.longitude
+                  ]}
+                  icon={myIcon}
+                >
+                  <Popup>
+                    <span>{guard.userFullName}</span>
+                    <br />
+                    <span>Fart: {guard.speed} meter i min</span>
+                  </Popup>
+                </Marker>
+              );
+            }
+            return null;
+          } else {
+            return (
+              <Marker
+                key={guard.id}
+                position={[
+                  guard.guardLocation.latitude,
+                  guard.guardLocation.longitude
+                ]}
+                icon={myIcon}
+              >
+                <Popup>
+                  <span>{guard.userFullName}</span>
+                  <br />
+                  <span>Fart: {guard.speed} meter i min</span>
+                </Popup>
+              </Marker>
+            );
+          }
         })}
       </Map>
-      <MessageBox />
+      <MessageBox
+        notify={(text, type) => notify(text, type)}
+        guardsToken={guardsToken}
+      />
     </Grid>
   );
 }

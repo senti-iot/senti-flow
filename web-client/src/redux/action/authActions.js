@@ -55,13 +55,21 @@ setToken();
 export const loginUser = userData => async dispatch => {
   await api
     .post(`odeum/auth/organization`, userData)
-    .then(res => {
+    .then(async res => {
       if (res.data.isLoggedIn) {
-        let exp = moment().add("1", "day");
-        cookie.save("SESSION", res, { path: "/", expires: exp.toDate() });
-        if (setToken()) {
-          dispatch(setUser());
-        }
+        api.headers.ODEUMAuthToken = res.data.sessionID;
+        await api.get(`/core/user/${res.data.userID}`).then(user => {
+          if (
+            user.data.groups[Object.keys(user.data.groups)[0]].name ===
+            "Senti Account Managers"
+          ) {
+            let exp = moment().add("1", "day");
+            cookie.save("SESSION", res, { path: "/", expires: exp.toDate() });
+            if (setToken()) {
+              dispatch(setUser());
+            }
+          }
+        });
       }
     })
     .catch(() => dispatch(setError({ message: "Invalid credentials" })));
@@ -102,6 +110,8 @@ export const logOut = () => async dispatch => {
   var session = cookie.load("SESSION");
   await api.delete(`odeum/auth/${session.data.sessionID}`);
   cookie.remove("SESSION");
+  localStorage.removeItem("guards");
+  localStorage.removeItem("zoomedGuard");
   dispatch(logoutUser({}));
   dispatch(setUserInfo({}));
 };

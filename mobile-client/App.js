@@ -150,7 +150,8 @@ TaskManager.defineTask(LOCATION_TASK_NAME, async ({ data, error }) => {
     location: { ...locations },
     userID: await AsyncStorage.getItem("userID"),
     userFullName: await AsyncStorage.getItem("userFullName"),
-    userAvatar: await AsyncStorage.getItem("userAvatar")
+    userAvatar: await AsyncStorage.getItem("userAvatar"),
+    pushToken: await AsyncStorage.getItem("pushToken")
   };
   mqttActions.sendData(JSON.stringify(locations));
 });

@@ -97,8 +97,8 @@ export default function StatusContainer({ guards }) {
                   ].text
                 }
                 // Need to implemente speed, not done yet! default is 5 just for test
-                speed={5}
-                time={moment(oneGuard.guardStatus.timestamp).format("H:mm:ss")}
+                speed={oneGuard.speed}
+                time={moment(oneGuard.guardStatus.timestamp).format("HH:mm:ss")}
               />
             );
           }

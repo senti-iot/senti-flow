@@ -12,6 +12,7 @@ const sendStatus = async status => {
     userID: await AsyncStorage.getItem("userID"),
     timestamp: Date.now()
   };
+
   mqttActions.sendData(JSON.stringify(data));
 };
 const Home = () => {
